@@ -61,6 +61,12 @@ Module Walkedby '走過去的常用函数合集
         随机 = Rnd() * (a - b） + b
     End Function
 
+    '随机一个布林值
+    Public Function 随机B() As Boolean
+        Randomize()
+        随机B = (Rnd() >= 0.5)
+    End Function
+
     '随机一个颜色，但是可以固定RGBA
     Public Function 随机颜色(Optional R As Integer = 0, Optional G As Integer = 0, Optional B As Integer = 0, Optional A As Integer = 255) As Color
         If A < 1 Or A > 255 Then A = 随机(1, 255)
@@ -77,6 +83,19 @@ Module Walkedby '走過去的常用函数合集
             s = s + Chr(随机(97, 122))
         Next
         随机字母 = s
+    End Function
+
+    '随机a小段，每小段b长度，用s相连的 KEY 出来
+    Public Function 随机KEY(Optional a As Integer = 5, Optional b As Integer = 5, Optional s As String = "-") As String
+        随机KEY = s
+        Dim i As Integer, j As Integer, x As String = ""
+        For i = 1 To a
+            For j = 1 To b
+                If 随机B() Then x = x & 随机字母(1) Else x = x & 随机(9, 0)
+            Next
+            x = x & s
+        Next
+        随机KEY = UCase(去右(x, s.Length))
     End Function
 
     '从 str 中去除指定的文字
