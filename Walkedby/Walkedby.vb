@@ -362,14 +362,20 @@ Module Walkedby '走過去的常用函数合集
     Public Function 列表转文字(l As Object) As String
         Dim s As String = "", m As String = ""
         For Each s In l.Items
-            m = s + vbCrLf
+            m = m + s + vbCrLf
         Next
-        列表转文字 = m
+        列表转文字 = 去右(m, 2)
     End Function
 
     '获得UNIX时间
     Public Function UNIX时间(time1 As Date) As Long
         UNIX时间 = DateDiff("s", "1970-1-1 0:0:0", ConvertTimeToUtc(time1))
+    End Function
+
+    'UNIX时间变成普通的时间
+    Public Function UNIX时间恢复(u As Long) As Date
+        Dim T1970 As Date = "1970-1-1 0:0:0"
+        UNIX时间恢复 = ConvertTime(T1970.Add(New TimeSpan(0, 0, 0, u)), Utc, Local)
     End Function
 
     '去掉字符串里不是数字的字符
@@ -389,9 +395,9 @@ Module Walkedby '走過去的常用函数合集
         Process.Start(str)
     End Sub
 
-    '便捷的控制台输出，为空的时候到VS控制台，其他输出到文本框
+    '便捷的控制台输出，为空的时候到VS控制台，其他输出到文本框类控件
     Public Sub 控制台(s As Object, Optional a As Object = Nothing)
-        If a.Equals(Nothing) Then
+        If IsNothing(a) Then
             Console.WriteLine(s.ToString)
         Else
             a.Text = a.Text + vbCrLf + s.ToString
