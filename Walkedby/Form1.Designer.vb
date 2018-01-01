@@ -24,17 +24,28 @@ Partial Class Form1
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.Button1 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Timer1
         '
         Me.Timer1.Enabled = True
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(666, 142)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(144, 52)
+        Me.Button1.TabIndex = 0
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(858, 533)
+        Me.Controls.Add(Me.Button1)
         Me.Font = New System.Drawing.Font("Microsoft YaHei", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.KeyPreview = True
@@ -47,4 +58,5 @@ Partial Class Form1
 
     End Sub
     Friend WithEvents Timer1 As Timer
+    Friend WithEvents Button1 As Button
 End Class

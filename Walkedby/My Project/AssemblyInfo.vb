@@ -10,8 +10,8 @@ Imports System.Runtime.InteropServices
 
 <Assembly: AssemblyTitle("走過去的常用函数集")>
 <Assembly: AssemblyDescription("戈登走過去")>
-<Assembly: AssemblyCompany("Microsoft")>
-<Assembly: AssemblyProduct("Walkedby")>
+<Assembly: AssemblyCompany("戈登走過去")>
+<Assembly: AssemblyProduct("戈登走過去")>
 <Assembly: AssemblyCopyright("戈登走過去")>
 <Assembly: AssemblyTrademark("戈登走過去")>
 

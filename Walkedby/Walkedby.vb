@@ -267,7 +267,7 @@ Module Walkedby '走過去的常用函数合集
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
-        If Not 文件可写(path) Then Exit Function
+        If Not 文件存在(path) Then Exit Function
         读 = File.ReadAllText(path, Encoding.UTF8)
     End Function
 
@@ -427,5 +427,91 @@ Module Walkedby '走過去的常用函数合集
         End Try
         完成Web = True
     End Function
+
+    '下面是走過去的存介系统，需要放置在程序开启和关闭处
+    Public 存介 As String
+
+    '改一个存介值，值最长为1000
+    Public Sub 改值(名字 As String, 值 As String)
+        名字 = 去除(名字, "<", ">", vbCr, vbLf, vbCrLf)
+        If 值.Length < 1 Then
+            存介 = 正则去除(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
+            Exit Sub
+        End If
+        值 = Replace(Replace(值, "<", "&左lt;括"), ">", "&右gt;括")
+        If 值.Length > 1000 Then 值 = 左(值, 1000)
+        If Regex.IsMatch(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">") Then
+            Dim m As Match = Regex.Match(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
+            Dim al As Integer = m.Index
+            Dim bl As Integer = m.ToString.Length
+            存介 = 左(存介, al) + "<" + 名字 + ">" + 值 + "<" + 名字 + ">" + 去左(存介, al + bl)
+        Else
+            存介 = 存介 + vbCrLf + "<" + 名字 + ">" + 值 + "<" + 名字 + ">"
+        End If
+    End Sub
+
+    '读取一个存介值为字符串
+    Public Function 读值(名字 As String, Optional 默认 As String = "") As String
+        读值 = 默认
+        名字 = 去除(名字, "<", ">", vbCr, vbLf, vbCrLf)
+        If Regex.IsMatch(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">") Then
+            Dim m As Match = Regex.Match(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
+            Dim s As String = m.ToString
+            s = 去除(s, "<" + 名字 + ">")
+            s = Replace(s, "&左lt;括", "<")
+            s = Replace(s, "&右gt;括", ">")
+            读值 = s
+        End If
+    End Function
+
+    '读取存介值为布林值
+    Public Function 读值B(名字 As String, Optional 默认 As Boolean = False) As Boolean
+        读值B = 读值(名字, 默认.ToString).Equals("True")
+    End Function
+
+    '读取存介值为数字
+    Public Function 读值N(名字 As String, Optional 默认 As Single = 0) As Single
+        读值N = Val(读值(名字, 默认.ToString))
+    End Function
+
+    '开启软件时的读取
+    Public Sub 存介开始(MyName As String)
+        存介 = ""
+        If MyName.Equals(程序名) = False Then
+            MsgBox("警告：不要修改本软件的文件名！
+Error: Don't change the name of program!
+The original name:" + MyName, MsgBoxStyle.OkOnly + MsgBoxStyle.Exclamation)
+            End
+        End If
+        Dim s As String = 程序目录() + "save_" + 去除(MyName, ".exe") + ".wb"
+        Dim x As String = 读(s)
+        If 头(x, "<走過去存介><任何修改导致的不良后果由修改者承担>
+<本存介用于>" + MyName + "<本存介用于>") And 尾(x, "<走過去存介>") Then
+            存介 = x
+        Else
+            Dim m As String = "<走過去存介><任何修改导致的不良后果由修改者承担>
+<本存介用于>" + MyName + "<本存介用于>
+<最后打开于><最后打开于>
+<最后保存于>第一次打开<最后保存于>"
+            写(s, m)
+            存介 = m
+        End If
+        改值("最后打开于", Now)
+    End Sub
+
+    '清空所有值并保存
+    Public Sub 存介清空()
+        存介 = "<走過去存介><任何修改导致的不良后果由修改者承担>
+<本存介用于>" + 程序名() + "<本存介用于>
+<最后打开于>" + Now + "<最后打开于>
+<最后保存于>第一次打开<最后保存于>"
+        存介结束()
+    End Sub
+
+    '关闭软件时的写入
+    Public Sub 存介结束()
+        改值("最后保存于", Now)
+        写(程序目录() + "save_" + 去除(程序名, ".exe") + ".wb", 存介)
+    End Sub
 
 End Module
