@@ -19,7 +19,7 @@ Module Walkedby '走過去的常用函数合集
         If i > 0 Then 右 = Right(str, i) Else 右 = ""
     End Function
 
-    '去掉左边和右边
+    '去掉左边或右边
     Public Function 去左(str As String, i As Integer) As String
         去左 = ""
         If str.Length - i > 0 Then 去左 = Right(str, str.Length - i)
@@ -27,6 +27,16 @@ Module Walkedby '走過去的常用函数合集
     Public Function 去右(str As String, i As Integer) As String
         去右 = ""
         If str.Length - i > 0 Then 去右 = Left(str, str.Length - i)
+    End Function
+
+    '检查字符串头或者尾是不是对应的
+    Public Function 头(str As String, a As String) As Boolean
+        If a.Length < 1 Then 头 = False : Exit Function
+        头 = (左(str, a.Length).Equals(a))
+    End Function
+    Public Function 尾(str As String, a As String) As Boolean
+        If a.Length < 1 Then 尾 = False : Exit Function
+        尾 = (右(str, a.Length).Equals(a))
     End Function
 
     'find 是否包含在 str 里，默认不检查大小写
@@ -389,7 +399,7 @@ Module Walkedby '走過去的常用函数合集
 
     '打开网址到浏览器
     Public Sub 浏览器打开(str As String)
-        If 左(str, "http://".Length).Equals("http://") = False Or 左(str, "https://".Length).Equals("https://") = False Or 左(str, "file://".Length).Equals("file://") = False Then
+        If Not (头(str, "https://") Or 头(str, "http://") Or 头(str, "file://")) Then
             str = "http://" + str
         End If
         Process.Start(str)
