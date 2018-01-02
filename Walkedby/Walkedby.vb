@@ -458,8 +458,6 @@ Module Walkedby '走過去的常用函数合集
         完成Web = True
     End Function
 
-    '校验
-
     '下面是走過去的存介系统，需要放置在程序开启和关闭处
     Public 存介 As String
 
