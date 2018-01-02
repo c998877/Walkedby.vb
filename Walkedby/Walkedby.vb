@@ -411,8 +411,19 @@ Module Walkedby '走過去的常用函数合集
     Public Function 只要数字(str As String) As String
         只要数字 = ""
         If str.Length < 1 Then Exit Function
-        For i As Integer = 0 To str.Length - 1
-            If str(i) >= "0" And str(i) <= "9" Then 只要数字 = 只要数字 + str(i)
+        For Each m As Match In Regex.Matches(str, "[0-9]")
+            只要数字 = 只要数字 + m.ToString
+        Next
+    End Function
+
+    '去掉字符串里不是字母的字符，可以选择保留数字
+    Public Function 只要字母(str As String, Optional KeepNum As Boolean = False) As String
+        只要字母 = ""
+        If str.Length < 1 Then Exit Function
+        Dim s As String = "([a-z]|[A-Z])"
+        If KeepNum Then s = "([a-z]|[A-Z]|[0-9])"
+        For Each m As Match In Regex.Matches(str, s)
+            只要字母 = 只要字母 + m.ToString
         Next
     End Function
 
@@ -424,15 +435,15 @@ Module Walkedby '走過去的常用函数合集
         Process.Start(str)
     End Sub
 
-    '便捷的控制台输出，为空的时候到VS控制台，其他输出到文本框类控件
-    Public Sub 控制台(s As Object, Optional a As Object = Nothing)
-        If IsNothing(a) Then
-            Console.WriteLine(s.ToString)
-        Else
-            a.Text = a.Text + vbCrLf + s.ToString
-            a.SelectionStart = a.TextLength
-            a.ScrollToCaret()
-        End If
+    '便捷的控制台输出，多个选项自动分开
+    Public Sub 控制台(a As Object, Optional b As Object = Nothing, Optional c As Object = Nothing, Optional d As Object = Nothing, Optional e As Object = Nothing)
+        Dim s As String = ""
+        If Not IsNothing(a) Then s = s + a.ToString + vbTab
+        If Not IsNothing(b) Then s = s + b.ToString + vbTab
+        If Not IsNothing(c) Then s = s + c.ToString + vbTab
+        If Not IsNothing(d) Then s = s + d.ToString + vbTab
+        If Not IsNothing(e) Then s = s + e.ToString
+        Console.WriteLine(s)
     End Sub
 
     '验证一个 WebBrowser 是否加载完成
@@ -447,90 +458,98 @@ Module Walkedby '走過去的常用函数合集
         完成Web = True
     End Function
 
+    '校验
+
     '下面是走過去的存介系统，需要放置在程序开启和关闭处
     Public 存介 As String
 
-    '改一个存介值，值最长为1000
-    Public Sub 改值(名字 As String, 值 As String)
-        名字 = 去除(名字, "<", ">", vbCr, vbLf, vbCrLf)
-        If 值.Length < 1 Then
-            存介 = 正则去除(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
-            Exit Sub
-        End If
-        值 = Replace(Replace(值, "<", "&左lt;括"), ">", "&右gt;括")
-        If 值.Length > 1000 Then 值 = 左(值, 1000)
-        If Regex.IsMatch(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">") Then
-            Dim m As Match = Regex.Match(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
-            Dim al As Integer = m.Index
-            Dim bl As Integer = m.ToString.Length
-            存介 = 左(存介, al) + "<" + 名字 + ">" + 值 + "<" + 名字 + ">" + 去左(存介, al + bl)
-        Else
-            存介 = 存介 + vbCrLf + "<" + 名字 + ">" + 值 + "<" + 名字 + ">"
-        End If
+    '抹去指定的组
+    Public Sub 删组(GroupName As String)
+        存介 = 正则去除(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》")
     End Sub
 
-    '读取一个存介值为字符串
-    Public Function 读值(名字 As String, Optional 默认 As String = "") As String
-        读值 = 默认
-        名字 = 去除(名字, "<", ">", vbCr, vbLf, vbCrLf)
-        If Regex.IsMatch(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">") Then
-            Dim m As Match = Regex.Match(存介, "<" + 名字 + ">([\s\S]*?)<" + 名字 + ">")
-            Dim s As String = m.ToString
-            s = 去除(s, "<" + 名字 + ">")
-            s = Replace(s, "&左lt;括", "<")
-            s = Replace(s, "&右gt;括", ">")
-            读值 = s
+    '抹去指定的项
+    Public Sub 删项(项名 As String, Optional GroupName As String = "Main")
+        Dim G As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
+        If G.Length < 1 Then Exit Sub
+        G = 正则去除(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》")
+        存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
+    End Sub
+
+    '给指定的组，指定的项新增一个值，默认值名为DF，默认组名为 Main，规范：值的长度不能大于2000，组名必须是英文，项名必须是中文，自动生成不存在的组和项
+    Public Sub 存值(项名 As String, 值 As String, Optional 值名 As String = "DF", Optional GroupName As String = "Main")
+        Dim G As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
+        If G.Length < 1 Then
+            G = "《" + GroupName + "》" + vbCrLf + "《/" + GroupName + "》"
+            存介 = 存介 + G + vbCrLf
         End If
+        Dim s1 As String, s2 As String
+        Dim S As String = Regex.Match(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》").ToString
+        If S.Length < 1 Then
+            s1 = 去右(Regex.Match(G, "《" + GroupName + "》([\s\S]*?)《/").ToString, 2)
+            s2 = 去左(G, s1.Length)
+            S = "《" + 项名 + "/《》/" + 项名 + "》"
+            G = s1 + S + vbCrLf + s2
+            存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
+        End If
+        值 = 左(值, 2000)
+        值 = Replace(值, "/", "&倾ft;")
+        值 = Replace(值, "《", "&左lt;")
+        值 = Replace(值, "》", "&右gt;")
+        Dim V As String = ""
+        S = 正则去除(S, " " + 值名 + "=《([\s\S]*?)》 ")
+        If IsNothing(值) Then 值 = ""
+        If 值.Length > 0 Then V = " " + 值名 + "=《" + 值 + "》 "
+        s1 = Regex.Match(S, "《" + 项名 + "/《").ToString
+        s2 = 去左(S, s1.Length)
+        S = s1 + V + s2
+        G = Regex.Replace(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》", S)
+        存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
+    End Sub
+
+    '读取指定的组的指定的项的指定的值名的值
+    Public Function 读值(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As String
+        读值 = 默认
+        Dim g As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
+        If g.Length < 1 Then Exit Function
+        Dim s As String = Regex.Match(g, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》").ToString
+        If s.Length < 1 Then Exit Function
+        Dim v As String = Regex.Match(s, " " + 值名 + "=《([\s\S]*?)》 ").ToString
+        v = 去除(v, " " + 值名 + "=《" + "》 ")
+        读值 = Replace(Replace(Replace(v, "&左lt;", "《"), "&右gt;括", "》"), "&倾ft;", "/")
     End Function
 
-    '读取存介值为布林值
-    Public Function 读值B(名字 As String, Optional 默认 As Boolean = False) As Boolean
-        读值B = 读值(名字, 默认.ToString).Equals("True")
+    '读值并转换成布林值
+    Public Function 读值B(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As Boolean
+        读值B = 读值(项名, 默认, 值名, GroupName).Equals("True")
     End Function
 
-    '读取存介值为数字
-    Public Function 读值N(名字 As String, Optional 默认 As Single = 0) As Single
-        读值N = Val(读值(名字, 默认.ToString))
+    '读值并转换成数字
+    Public Function 读值N(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As Single
+        读值N = Val(读值(项名, 默认, 值名, GroupName))
     End Function
 
     '开启软件时的读取
     Public Sub 存介开始(MyName As String)
-        存介 = ""
         If MyName.Equals(程序名) = False Then
             MsgBox("警告：不要修改本软件的文件名！
 Error: Don't change the name of program!
 The original name:" + MyName, MsgBoxStyle.OkOnly + MsgBoxStyle.Exclamation)
             End
         End If
-        Dim s As String = 程序目录() + "save_" + 去除(MyName, ".exe") + ".wb"
-        Dim x As String = 读(s)
-        If 头(x, "<走過去存介><任何修改导致的不良后果由修改者承担>
-<本存介用于>" + MyName + "<本存介用于>") And 尾(x, "<走過去存介>") Then
+        存介 = "《走過去存介系统》请不要尝试乱改！ Please don't change any value!" + vbCrLf
+        Dim x As String = 读(程序目录() + 去除(MyName, ".exe") + ".wbs")
+        If Regex.IsMatch(x, "^《走過去存介系统》请不要尝试乱改！ Please don't change any value!([\s\S]*?)《Main》([\s\S]*?)《/Main》") Then
             存介 = x
-        Else
-            Dim m As String = "<走過去存介><任何修改导致的不良后果由修改者承担>
-<本存介用于>" + MyName + "<本存介用于>
-<最后打开于><最后打开于>
-<最后保存于>第一次打开<最后保存于>"
-            写(s, m)
-            存介 = m
         End If
-        改值("最后打开于", Now)
-    End Sub
-
-    '清空所有值并保存
-    Public Sub 存介清空()
-        存介 = "<走過去存介><任何修改导致的不良后果由修改者承担>
-<本存介用于>" + 程序名() + "<本存介用于>
-<最后打开于>" + Now + "<最后打开于>
-<最后保存于>第一次打开<最后保存于>"
-        存介结束()
+        存值("最后打开时间", Now)
     End Sub
 
     '关闭软件时的写入
     Public Sub 存介结束()
-        改值("最后保存于", Now)
-        写(程序目录() + "save_" + 去除(程序名, ".exe") + ".wb", 存介)
+        存值("最后保存时间", Now)
+        写(程序目录() + 去除(程序名, ".exe") + ".wbs", 存介)
     End Sub
 
 End Module
+
