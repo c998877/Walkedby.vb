@@ -7,20 +7,14 @@ Imports System.Text
 
 
 Public Class Form1
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-    End Sub
-
+    Dim t1 As Integer = 0
+    Dim t2 As Integer = 0
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        RR.Text = 存介
-    End Sub
-
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        Timer1.Enabled = Not Timer1.Enabled
-    End Sub
-
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        sender.text = "s"
+        If 随机B() Then
+            t1 = t1 + 1
+        Else
+            t2 = t2 + 1
+        End If
+        控制台(t1, t2)
     End Sub
 End Class

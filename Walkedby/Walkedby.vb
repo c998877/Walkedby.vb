@@ -19,6 +19,7 @@ Module Walkedby '走過去的常用函数合集
         If i > 0 Then 右 = Right(str, i) Else 右 = ""
     End Function
 
+
     '去掉左边或右边
     Public Function 去左(str As String, i As Integer) As String
         去左 = ""
@@ -58,13 +59,12 @@ Module Walkedby '走過去的常用函数合集
             a = t
         End If
         Randomize()
-        随机 = Rnd() * (a - b） + b
+        随机 = Int(Rnd() * (a - b + 1） + b)
     End Function
 
     '随机一个布林值
     Public Function 随机B() As Boolean
-        Randomize()
-        随机B = (Rnd() >= 0.5)
+        随机B = (随机(1, 2) = 2)
     End Function
 
     '随机一个颜色，但是可以固定RGBA
@@ -550,4 +550,6 @@ The original name:" + MyName, MsgBoxStyle.OkOnly + MsgBoxStyle.Exclamation)
     End Sub
 
 End Module
+
+
 
