@@ -22,43 +22,44 @@ Partial Class Form1
     '請勿使用程式碼編輯器進行修改。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.RR = New System.Windows.Forms.RichTextBox()
         Me.TT = New System.Windows.Forms.TextBox()
+        Me.Button1 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
-        '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(712, -9)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(180, 75)
-        Me.Button1.TabIndex = 0
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
         '
         'RR
         '
-        Me.RR.Location = New System.Drawing.Point(13, 18)
+        Me.RR.DetectUrls = False
+        Me.RR.Location = New System.Drawing.Point(32, 66)
         Me.RR.Name = "RR"
-        Me.RR.Size = New System.Drawing.Size(620, 459)
-        Me.RR.TabIndex = 1
+        Me.RR.Size = New System.Drawing.Size(788, 442)
+        Me.RR.TabIndex = 0
         Me.RR.Text = ""
         '
         'TT
         '
-        Me.TT.Location = New System.Drawing.Point(639, 72)
+        Me.TT.Location = New System.Drawing.Point(39, 28)
         Me.TT.Name = "TT"
-        Me.TT.Size = New System.Drawing.Size(176, 29)
-        Me.TT.TabIndex = 2
+        Me.TT.Size = New System.Drawing.Size(681, 29)
+        Me.TT.TabIndex = 1
+        '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(728, 17)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(91, 39)
+        Me.Button1.TabIndex = 2
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(858, 533)
+        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.TT)
         Me.Controls.Add(Me.RR)
-        Me.Controls.Add(Me.Button1)
         Me.Font = New System.Drawing.Font("Microsoft YaHei", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.KeyPreview = True
@@ -72,7 +73,7 @@ Partial Class Form1
 
     End Sub
 
-    Friend WithEvents Button1 As Button
     Friend WithEvents RR As RichTextBox
     Friend WithEvents TT As TextBox
+    Friend WithEvents Button1 As Button
 End Class

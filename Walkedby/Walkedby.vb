@@ -8,28 +8,46 @@ Imports System.Net
 Imports System.Text
 
 Module Walkedby '走過去的常用函数合集
-    '修改：2018年1月1日
     '統一：简体字，数字一律整数 Integer
 
     Public Const 引号 As String = """"
 
     '左右，相当于 left right
-    Public Function 左(str As String, i As Integer) As String
-        If i > 0 Then 左 = Left(str, i) Else 左 = ""
+    Public Function 左(str As String, i As Object) As String
+        Dim s As Integer
+        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If s > 0 Then 左 = Left(str, s) Else 左 = ""
     End Function
-    Public Function 右(str As String, i As Integer) As String
-        If i > 0 Then 右 = Right(str, i) Else 右 = ""
+    Public Function 右(str As String, i As Object) As String
+        Dim s As Integer
+        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If s > 0 Then 右 = Right(str, s) Else 右 = ""
     End Function
-
+    Public Function 左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
+        Dim l As Integer, r As Integer
+        If 左边.GetType = "".GetType Then l = 左边.length Else l = 左边
+        If 右边.GetType = "".GetType Then r = 右边.length Else r = 右边
+        If l + r >= str.Length Then 左右 = str Else 左右 = 左(str, l) + 右(str, r)
+    End Function
 
     '去掉左边或右边
-    Public Function 去左(str As String, i As Integer) As String
+    Public Function 去左(str As String, i As Object) As String
         去左 = ""
-        If str.Length - i > 0 Then 去左 = Right(str, str.Length - i)
+        Dim s As Integer
+        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If str.Length - s > 0 Then 去左 = Right(str, str.Length - s)
     End Function
-    Public Function 去右(str As String, i As Integer) As String
+    Public Function 去右(str As String, i As Object) As String
         去右 = ""
-        If str.Length - i > 0 Then 去右 = Left(str, str.Length - i)
+        Dim s As Integer
+        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If str.Length - s > 0 Then 去右 = Left(str, str.Length - s)
+    End Function
+    Public Function 去左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
+        Dim l As Integer, r As Integer
+        If 左边.GetType = "".GetType Then l = 左边.length Else l = 左边
+        If 右边.GetType = "".GetType Then r = 右边.length Else r = 右边
+        If l + r >= str.Length Then 去左右 = "" Else 去左右 = Mid(str, l + 1, str.Length - r - l)
     End Function
 
     '检查字符串头或者尾是不是对应的
@@ -449,7 +467,7 @@ Module Walkedby '走過去的常用函数合集
     End Sub
 
     '验证一个 WebBrowser 是否加载完成
-    Public Function 完成Web(wb As WebBrowser, Optional bodylen As Integer = 2000) As Boolean
+    Public Function 完成Web(wb As WebBrowser, Optional bodylen As Integer = 3000) As Boolean
         完成Web = False
         Try
             If wb.Document = Nothing Then Exit Function
@@ -461,14 +479,14 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '简易的 HTTP GET ，可以很快获得 HTML 内容
-    Public Function 快速HttpGet(url As String) As String
-        快速HttpGet = ""
+    Public Function 获取Http(url As String, Optional df As String = "ERROR") As String
+        获取Http = df
+        If url.Length < 4 Then Exit Function
         Try
-            If url.Length < 4 Then Exit Function
             Dim hq As HttpWebRequest = WebRequest.Create(url)
             hq.Method = "GET"
             Dim sr As StreamReader = New StreamReader(hq.GetResponse.GetResponseStream)
-            快速HttpGet = sr.ReadToEnd
+            获取Http = sr.ReadToEnd
             sr.Close()
         Catch
         End Try
