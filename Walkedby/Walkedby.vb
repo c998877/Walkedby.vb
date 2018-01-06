@@ -3,6 +3,8 @@ Imports System.Text.RegularExpressions
 Imports System.Math
 Imports System.TimeZoneInfo
 Imports Microsoft
+Imports System.Web
+Imports System.Net
 Imports System.Text
 
 Module Walkedby '走過去的常用函数合集
@@ -456,6 +458,20 @@ Module Walkedby '走過去的常用函数合集
         Catch
         End Try
         完成Web = True
+    End Function
+
+    '简易的 HTTP GET ，可以很快获得 HTML 内容
+    Public Function 快速HttpGet(url As String) As String
+        快速HttpGet = ""
+        Try
+            If url.Length < 4 Then Exit Function
+            Dim hq As HttpWebRequest = WebRequest.Create(url)
+            hq.Method = "GET"
+            Dim sr As StreamReader = New StreamReader(hq.GetResponse.GetResponseStream)
+            快速HttpGet = sr.ReadToEnd
+            sr.Close()
+        Catch
+        End Try
     End Function
 
     '下面是走過去的存介系统，需要放置在程序开启和关闭处
