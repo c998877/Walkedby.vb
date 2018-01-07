@@ -108,6 +108,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SteamWebUser.vb" />
     <Compile Include="Walkedby.vb" />
   </ItemGroup>
   <ItemGroup>

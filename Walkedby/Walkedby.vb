@@ -3,9 +3,11 @@ Imports System.Text.RegularExpressions
 Imports System.Math
 Imports System.TimeZoneInfo
 Imports Microsoft
+Imports System.Text
+Imports System.ComponentModel
 Imports System.Web
 Imports System.Net
-Imports System.Text
+Imports System.Threading
 
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
@@ -481,122 +483,17 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '根据主页地址获得 Steam 64 ID 
-    Public Function 获得Steam64ID(url As String) As String
-        获得Steam64ID = ""
+    Public Function Steam64ID(url As String) As String
+        Steam64ID = ""
         Dim s As String = url
         If s.Length < 20 Then Exit Function
         s = Replace(s, "\", "/") + "/"
         If Regex.IsMatch(s, "steamcommunity.com/(profiles|id)/.+$") = False Then Exit Function
         s = Regex.Match(s, "steamcommunity.com/(profiles|id)/.*?(\?|/)").ToString
         s = 正则去除(s, "(\?|/)*$")
-        获得Steam64ID = 只要数字(Regex.Match(获得Http(s), "steamid"":""[0-9]*?"",""personaname").ToString)
-        If 获得Steam64ID.Length <> 17 Then 获得Steam64ID = ""
+        Steam64ID = 只要数字(Regex.Match(获得Http(s), "steamid"":""[0-9]*?"",""personaname").ToString)
+        If Steam64ID.Length <> 17 Then Steam64ID = ""
     End Function
-
-    '根据 64 ID 来获得 Steam 用户昵称
-    Public Function 获得Steam用户昵称(id64 As String, SteamAPIKey As String) As String
-        获得Steam用户昵称 = ""
-        If id64.Length <> 17 Then Exit Function
-        If SteamAPIKey.Length < 20 Then Exit Function
-        Dim h As String = 获得Http("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + SteamAPIKey + "&steamids=" + id64)
-        h = Regex.Match(h, "personaname"": "".*?"",").ToString
-        获得Steam用户昵称 = 去左右(h, 15, 2)
-    End Function
-
-    '下面是走過去的存介系统，需要放置在程序开启和关闭处
-    Public 存介 As String
-
-    '抹去指定的组
-    Public Sub 删组(GroupName As String)
-        存介 = 正则去除(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》")
-    End Sub
-
-    '抹去指定的项
-    Public Sub 删项(项名 As String, Optional GroupName As String = "Main")
-        Dim G As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
-        If G.Length < 1 Then Exit Sub
-        G = 正则去除(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》")
-        存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
-    End Sub
-
-    '给指定的组，指定的项新增一个值，默认值名为DF，默认组名为 Main，组名必须是英文，项名必须是中文，自动生成不存在的组和项
-    Public Sub 存值(项名 As String, 值 As String, Optional 值名 As String = "DF", Optional GroupName As String = "Main")
-        Dim G As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
-        If G.Length < 1 Then
-            G = "《" + GroupName + "》" + vbCrLf + "《/" + GroupName + "》"
-            存介 = 存介 + G + vbCrLf
-        End If
-        Dim s1 As String, s2 As String
-        Dim S As String = Regex.Match(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》").ToString
-        If S.Length < 1 Then
-            s1 = 去右(Regex.Match(G, "《" + GroupName + "》([\s\S]*?)《/").ToString, 2)
-            s2 = 去左(G, s1.Length)
-            S = "《" + 项名 + "/《》/" + 项名 + "》"
-            G = s1 + S + vbCrLf + s2
-            存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
-        End If
-        值 = 去除(值, "&倾ft;")
-        值 = 去除(值, "&左lt;")
-        值 = 去除(值, "&右gt;")
-        值 = Replace(值, "/", "&倾ft;")
-        值 = Replace(值, "《", "&左lt;")
-        值 = Replace(值, "》", "&右gt;")
-        Dim V As String = ""
-        S = 正则去除(S, " " + 值名 + "=《([\s\S]*?)》 ")
-        If IsNothing(值) Then 值 = ""
-        If 值.Length > 0 Then V = " " + 值名 + "=《" + 值 + "》 "
-        s1 = Regex.Match(S, "《" + 项名 + "/《").ToString
-        s2 = 去左(S, s1.Length)
-        S = s1 + V + s2
-        G = Regex.Replace(G, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》", S)
-        存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
-    End Sub
-
-    '读取指定的组的指定的项的指定的值名的值
-    Public Function 读值(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As String
-        读值 = 默认
-        Dim g As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
-        If g.Length < 1 Then Exit Function
-        Dim s As String = Regex.Match(g, "《" + 项名 + "/([\s\S]*?)/" + 项名 + "》").ToString
-        If s.Length < 1 Then Exit Function
-        Dim v As String = Regex.Match(s, " " + 值名 + "=《([\s\S]*?)》 ").ToString
-        v = 去除(v, " " + 值名 + "=《" + "》 ")
-        v = 去左右(Regex.Match(v, "《([\s\S]*?)》").ToString, "《", "》"）
-        读值 = Replace(Replace(Replace(v, "&左lt;", "《"), "&右gt;括", "》"), "&倾ft;", "/")
-        If IsNothing(读值) Then 读值 = 默认
-    End Function
-
-    '读值并转换成布林值
-    Public Function 读值B(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As Boolean
-        读值B = 读值(项名, 默认, 值名, GroupName).Equals("True")
-    End Function
-
-    '读值并转换成数字
-    Public Function 读值N(项名 As String, Optional 默认 As String = "", Optional 值名 As String = "DF", Optional GroupName As String = "Main") As Single
-        读值N = Val(读值(项名, 默认, 值名, GroupName))
-    End Function
-
-    '开启软件时的读取
-    Public Sub 存介开始(MyName As String)
-        If MyName.Equals(程序名) = False Then
-            MsgBox("警告：不要修改本软件的文件名！
-Error: Don't change the name of program!
-The original name:" + MyName, MsgBoxStyle.OkOnly + MsgBoxStyle.Exclamation)
-            End
-        End If
-        存介 = "《走過去存介系统》请不要尝试乱改！ Please don't change any value!" + vbCrLf
-        Dim x As String = 读(程序目录() + 去除(MyName, ".exe") + ".wbs")
-        If Regex.IsMatch(x, "^《走過去存介系统》请不要尝试乱改！ Please don't change any value!([\s\S]*?)《Main》([\s\S]*?)《/Main》") Then
-            存介 = x
-        End If
-        存值("最后打开时间", Now)
-    End Sub
-
-    '关闭软件时的写入
-    Public Sub 存介结束()
-        存值("最后保存时间", Now)
-        写(程序目录() + 去除(程序名, ".exe") + ".wbs", 存介)
-    End Sub
 
 End Module
 
