@@ -8,6 +8,7 @@ Imports System.ComponentModel
 Imports System.Web
 Imports System.Net
 Imports System.Threading
+Imports System.Net.WebClient
 
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
@@ -295,21 +296,21 @@ Module Walkedby '走過去的常用函数合集
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
         If Not 文件可写(path) Then Exit Sub
-        File.WriteAllText(path, str, Encoding.UTF8)
+        File.WriteAllText(path, str, Text.Encoding.UTF8)
     End Sub
 
     '写入 str 到 path 文件的末尾
     Public Sub 附写(path As String, str As String, Optional addenter As Boolean = True)
         If Not 文件可写(path) Then Exit Sub
         If addenter Then str = vbCrLf + str
-        File.AppendAllText(path, str, Encoding.UTF8)
+        File.AppendAllText(path, str, Text.Encoding.UTF8)
     End Sub
 
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
         If Not 文件存在(path) Then Exit Function
-        读 = File.ReadAllText(path, Encoding.UTF8)
+        读 = File.ReadAllText(path, Text.Encoding.UTF8)
     End Function
 
     '获得 str 的行数，最少为1行
@@ -482,17 +483,17 @@ Module Walkedby '走過去的常用函数合集
         End Try
     End Function
 
-    '根据主页地址获得 Steam 64 ID 
-    Public Function Steam64ID(url As String) As String
-        Steam64ID = ""
-        Dim s As String = url
-        If s.Length < 20 Then Exit Function
-        s = Replace(s, "\", "/") + "/"
-        If Regex.IsMatch(s, "steamcommunity.com/(profiles|id)/.+$") = False Then Exit Function
-        s = Regex.Match(s, "steamcommunity.com/(profiles|id)/.*?(\?|/)").ToString
-        s = 正则去除(s, "(\?|/)*$")
-        Steam64ID = 只要数字(Regex.Match(获得Http(s), "steamid"":""[0-9]*?"",""personaname").ToString)
-        If Steam64ID.Length <> 17 Then Steam64ID = ""
+    '读取一张在线图片为 Image
+    Public Function 在线图片(url As String) As Image
+        在线图片 = Nothing
+        Try
+            If url.Length < 8 Then Exit Function
+            If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
+            Dim hq As HttpWebRequest = WebRequest.Create(url)
+            hq.Method = "GET"
+            在线图片 = Image.FromStream(hq.GetResponse.GetResponseStream)
+        Catch
+        End Try
     End Function
 
 End Module
