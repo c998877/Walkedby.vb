@@ -358,59 +358,46 @@ Module Walkedby '走過去的常用函数合集
         End If
     End Function
 
-    '检测 str 是否在列表型控件 l 里
+    '检测 str 是否在列表 l 里
     Public Function 在列表(l As Object, str As String) As Boolean
         在列表 = False
-        For Each i As String In l
-            If str = i Then
+        If str.Length = 0 Then Exit Function
+        If l.Count < 1 Then Exit Function
+        For Each i As Object In l
+            If str.Equals(i.ToString) Then
                 在列表 = True
                 Exit Function
             End If
         Next
     End Function
 
-    '为列表型控件 l 去重
+    '为列表 l 去重
     Public Sub 列表去重(l As Object)
-        If l.Items.Count < 1 Then Exit Sub
-        Dim go As New ArrayList
-        Dim i As Integer
-        Dim i2 As Integer
-        Dim i3 As Integer
-        For i = 0 To l.Items.Count - 1
-            For i2 = 0 To l.Items.Count - 1
-                If i <> i2 And l.Items.Item(i).ToString = l.Items.Item(i2).ToString Then
-                    Dim s As Boolean = False
-                    For Each i3 In go
-                        If i3 = i2 Then s = True
-                    Next
-                    If s = False Then go.Add(i2)
-                End If
-            Next
+        If l.Count < 1 Then Exit Sub
+        Dim x As Collection = New Collection
+        For Each i As String In l
+            If 在列表(x, i) = False Then x.Add(i)
         Next
-        If go.Count < 1 Then Exit Sub
-        go.Sort()
-        Dim na As String
-        For i = go.Count - 1 To 0 Step -1
-            na = l.Items.Item(Val(go.Item(i).ToString)).ToString
-            l.Items.RemoveAt(Val(go.Item(i).ToString))
-            If 在列表(l.items, na) = False Then l.Items.Add(na)
+        l.Clear()
+        For Each i As Object In x
+            l.Add(i.ToString)
         Next
     End Sub
 
-    '把每行文字加入到列表型控件
+    '把每行文字加入到列表 l
     Public Sub 文字转列表(str As String, l As Object)
-        If str.Length < 1 Then Exit Sub
+        If str.Length < 2 Then Exit Sub
         Dim i As Integer
         For i = 1 To 行数(str)
             Dim s As String = 行(str, i).ToString
-            If s.Length > 0 Then l.Items.Add(s)
+            If s.Length > 0 Then l.Add(s)
         Next
     End Sub
 
     '把列表型控件的每一项变成一行行的文字
     Public Function 列表转文字(l As Object) As String
         Dim s As String = "", m As String = ""
-        For Each s In l.Items
+        For Each s In l
             m = m + s + vbCrLf
         Next
         列表转文字 = 去右(m, 2)
@@ -479,17 +466,41 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '简易的 HTTP GET ，可以很快获得 HTML 内容
-    Public Function 获取Http(url As String, Optional df As String = "ERROR") As String
-        获取Http = df
-        If url.Length < 4 Then Exit Function
+    Public Function 获得Http(url As String, Optional df As String = "ERROR") As String
+        获得Http = df
+        If url.Length < 3 Then Exit Function
+        If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
         Try
             Dim hq As HttpWebRequest = WebRequest.Create(url)
             hq.Method = "GET"
             Dim sr As StreamReader = New StreamReader(hq.GetResponse.GetResponseStream)
-            获取Http = sr.ReadToEnd
+            获得Http = sr.ReadToEnd
             sr.Close()
         Catch
         End Try
+    End Function
+
+    '根据主页地址获得 Steam 64 ID 
+    Public Function 获得Steam64ID(url As String) As String
+        获得Steam64ID = ""
+        Dim s As String = url
+        If s.Length < 20 Then Exit Function
+        s = Replace(s, "\", "/") + "/"
+        If Regex.IsMatch(s, "steamcommunity.com/(profiles|id)/.+$") = False Then Exit Function
+        s = Regex.Match(s, "steamcommunity.com/(profiles|id)/.*?(\?|/)").ToString
+        s = 正则去除(s, "(\?|/)*$")
+        获得Steam64ID = 只要数字(Regex.Match(获得Http(s), "steamid"":""[0-9]*?"",""personaname").ToString)
+        If 获得Steam64ID.Length <> 17 Then 获得Steam64ID = ""
+    End Function
+
+    '根据 64 ID 来获得 Steam 用户昵称
+    Public Function 获得Steam用户昵称(id64 As String, SteamAPIKey As String) As String
+        获得Steam用户昵称 = ""
+        If id64.Length <> 17 Then Exit Function
+        If SteamAPIKey.Length < 20 Then Exit Function
+        Dim h As String = 获得Http("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + SteamAPIKey + "&steamids=" + id64)
+        h = Regex.Match(h, "personaname"": "".*?"",").ToString
+        获得Steam用户昵称 = 去左右(h, 15, 2)
     End Function
 
     '下面是走過去的存介系统，需要放置在程序开启和关闭处
@@ -508,7 +519,7 @@ Module Walkedby '走過去的常用函数合集
         存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
     End Sub
 
-    '给指定的组，指定的项新增一个值，默认值名为DF，默认组名为 Main，规范：值的长度不能大于2000，组名必须是英文，项名必须是中文，自动生成不存在的组和项
+    '给指定的组，指定的项新增一个值，默认值名为DF，默认组名为 Main，组名必须是英文，项名必须是中文，自动生成不存在的组和项
     Public Sub 存值(项名 As String, 值 As String, Optional 值名 As String = "DF", Optional GroupName As String = "Main")
         Dim G As String = Regex.Match(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》").ToString
         If G.Length < 1 Then
@@ -524,7 +535,9 @@ Module Walkedby '走過去的常用函数合集
             G = s1 + S + vbCrLf + s2
             存介 = Regex.Replace(存介, "《" + GroupName + "》([\s\S]*?)《/" + GroupName + "》", G)
         End If
-        值 = 左(值, 2000)
+        值 = 去除(值, "&倾ft;")
+        值 = 去除(值, "&左lt;")
+        值 = 去除(值, "&右gt;")
         值 = Replace(值, "/", "&倾ft;")
         值 = Replace(值, "《", "&左lt;")
         值 = Replace(值, "》", "&右gt;")
@@ -548,7 +561,9 @@ Module Walkedby '走過去的常用函数合集
         If s.Length < 1 Then Exit Function
         Dim v As String = Regex.Match(s, " " + 值名 + "=《([\s\S]*?)》 ").ToString
         v = 去除(v, " " + 值名 + "=《" + "》 ")
+        v = 去左右(Regex.Match(v, "《([\s\S]*?)》").ToString, "《", "》"）
         读值 = Replace(Replace(Replace(v, "&左lt;", "《"), "&右gt;括", "》"), "&倾ft;", "/")
+        If IsNothing(读值) Then 读值 = 默认
     End Function
 
     '读值并转换成布林值
