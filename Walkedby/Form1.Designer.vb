@@ -22,15 +22,16 @@ Partial Class Form1
     '請勿使用程式碼編輯器進行修改。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.RR = New System.Windows.Forms.RichTextBox()
-        Me.Picb = New System.Windows.Forms.PictureBox()
-        CType(Me.Picb, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
         Me.SuspendLayout()
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(38, 11)
+        Me.Button1.Location = New System.Drawing.Point(25, 256)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(265, 22)
         Me.Button1.TabIndex = 0
@@ -41,24 +42,29 @@ Partial Class Form1
         '
         Me.RR.Location = New System.Drawing.Point(25, 52)
         Me.RR.Name = "RR"
-        Me.RR.Size = New System.Drawing.Size(806, 425)
+        Me.RR.Size = New System.Drawing.Size(806, 198)
         Me.RR.TabIndex = 1
         Me.RR.Text = ""
         '
-        'Picb
+        'Button2
         '
-        Me.Picb.Location = New System.Drawing.Point(535, 29)
-        Me.Picb.Name = "Picb"
-        Me.Picb.Size = New System.Drawing.Size(264, 180)
-        Me.Picb.TabIndex = 2
-        Me.Picb.TabStop = False
+        Me.Button2.Location = New System.Drawing.Point(337, 256)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(265, 22)
+        Me.Button2.TabIndex = 3
+        Me.Button2.Text = "Button2"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'Timer1
+        '
+        Me.Timer1.Enabled = True
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(858, 533)
-        Me.Controls.Add(Me.Picb)
+        Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.RR)
         Me.Controls.Add(Me.Button1)
         Me.Font = New System.Drawing.Font("Microsoft YaHei", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
@@ -69,12 +75,12 @@ Partial Class Form1
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Form1"
-        CType(Me.Picb, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
 
     Friend WithEvents Button1 As Button
     Friend WithEvents RR As RichTextBox
-    Friend WithEvents Picb As PictureBox
+    Friend WithEvents Button2 As Button
+    Friend WithEvents Timer1 As Timer
 End Class

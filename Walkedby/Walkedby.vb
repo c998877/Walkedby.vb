@@ -496,6 +496,49 @@ Module Walkedby '走過去的常用函数合集
         End Try
     End Function
 
+    Public Function 走加密(str As String) As String
+        走加密 = 随机字母(40)
+        Dim s As String = str
+        If s.Length < 1 Or s.Length * 7 > 8000 Then Exit Function
+        s = 右("0" + Today.Day.ToString, 2) + s
+        Dim g As String = ""
+        For i As Integer = 0 To s.Length - 1
+            Dim w As Integer = w + 2
+            If w > 143 Then w = 143
+            Dim h As String = (AscW(s(i)) + w).ToString
+            Dim fake As Boolean = 随机B()
+            Do While h.Length < 7
+                If 随机B() Then h = 随机字母(1) + h Else h = h + 随机字母(1)
+            Loop
+            g = g & h
+        Next
+        g = g & 随机(180, 20) & 随机字母(1)
+        走加密 = g
+    End Function
+
+    Public Function 走解密(str As String) As String
+        走解密 = 随机字母(40)
+        Dim s As String = 去除(str, vbCr, vbLf, vbCrLf, " ", vbTab)
+        If s.Length < 1 Or s.Length > 8000 Then Exit Function
+        Dim g As String = ""
+        Dim m As Integer = 0
+        For i As Integer = 1 To s.Length Step 7
+            m = m + 2
+            If m > 143 Then m = 143
+            If Mid(s, i, 7).Length <> 7 Then Exit For
+            Dim h As Integer = Val(只要数字(Mid(s, i, 7)))
+            If h > 65535 Or h < -32768 Then Exit Function
+            g = g & ChrW(h - m)
+        Next
+        If Val(左(g, 2)) <> Today.Day Then
+            g = 随机字母(g.Length)
+        Else
+            g = 去左(g, 2)
+        End If
+        If g.Length < 1 Then g = 随机字母(40)
+        走解密 = g
+    End Function
+
 End Module
 
 
