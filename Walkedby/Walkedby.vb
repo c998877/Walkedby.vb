@@ -66,12 +66,36 @@ Module Walkedby '走過去的常用函数合集
     'find 是否包含在 str 里，默认不检查大小写
     Public Function 包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
         包含 = False
-        If str.Length = 0 Or find.Length = 0 Or str.Length < find.Length Then Exit Function
+        If str.Length < 1 Or find.Length < 1 Or str.Length < find.Length Then Exit Function
         If forceCase = False Then
             str = LCase(str)
             find = LCase(find)
         End If
         If InStr(str, find) > 0 Then 包含 = True
+    End Function
+    Public Function 正则包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
+        正则包含 = False
+        If str.Length < 1 Or find.Length < 1 Or str.Length < find.Length Then Exit Function
+        If Not forceCase Then
+            str = LCase(str)
+            find = LCase(find)
+        End If
+        If Regex.IsMatch(str, find) Then 正则包含 = True
+    End Function
+
+    '正则提取头尾字符中间的字符
+    Public Function 正则提取(str As String, head As String, tail As String, Optional multiLine As Boolean = True, Optional forceCase As Boolean = True) As String
+        正则提取 = ""
+        If str.Length < 1 Or head.Length + tail.Length > str.Length Or head.Length < 1 Or tail.Length < 1 Then Exit Function
+        If Not forceCase Then
+            str = LCase(str)
+            head = LCase(head)
+            tail = LCase(tail)
+        End If
+        Dim x As String = ".*?"
+        If multiLine Then x = "([\s\S]*?)"
+        Dim s As String = Regex.Match(str, head + x + tail).ToString
+        正则提取 = 去左右(s, head, tail)
     End Function
 
     '取得范围内的随机整数
@@ -496,6 +520,7 @@ Module Walkedby '走過去的常用函数合集
         End Try
     End Function
 
+    '走過去自己的蜜汁加密和解密
     Public Function 走加密(str As String) As String
         走加密 = 随机字母(40)
         Dim s As String = str
@@ -515,7 +540,6 @@ Module Walkedby '走過去的常用函数合集
         g = g & 随机(180, 20) & 随机字母(1)
         走加密 = g
     End Function
-
     Public Function 走解密(str As String) As String
         走解密 = 随机字母(40)
         Dim s As String = 去除(str, vbCr, vbLf, vbCrLf, " ", vbTab)

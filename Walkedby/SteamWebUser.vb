@@ -77,7 +77,7 @@ Public Class Steam用户    '一个神奇的 Steam Web API
         If 包含(PInfo, s) Then 现在游戏ID = Val(只要数字(Regex.Match(PInfo, s + 引号 + ": " + 引号 + ".*?" + 引号 + ",").ToString))
     End Sub
 
-    Public ReadOnly Property 头像(Optional size As Integer = 1) As String
+    Public ReadOnly Property 头像链接(Optional size As Integer = 3) As String
         Get
             Dim s As String
             Select Case size
@@ -90,7 +90,13 @@ Public Class Steam用户    '一个神奇的 Steam Web API
             End Select
             Dim h As String = PInfo
             h = Regex.Match(h, s + 引号 + ": "".*?" + 引号 + ",").ToString
-            头像 = 去左右(h, s.Length + 4, 2)
+            头像链接 = 去左右(h, s.Length + 4, 2)
+        End Get
+    End Property
+
+    Public ReadOnly Property 头像图片(Optional size As Integer = 3) As Image
+        Get
+            头像图片 = 在线图片(头像链接(size))
         End Get
     End Property
 
