@@ -8,18 +8,18 @@ Walkedby
 <members>
 <member name="T:Walkedby.My.Resources.Resources">
 <summary>
-  用於查詢當地語系化字串等的強類型資源類別。
+  一个强类型的资源类，用于查找本地化的字符串等。
 </summary>
 </member>
 <member name="P:Walkedby.My.Resources.Resources.ResourceManager">
 <summary>
-  傳回這個類別使用的快取的 ResourceManager 執行個體。
+  返回此类使用的缓存的 ResourceManager 实例。
 </summary>
 </member>
 <member name="P:Walkedby.My.Resources.Resources.Culture">
 <summary>
-  覆寫目前執行緒的 CurrentUICulture 屬性，對象是所有
-  使用這個強類型資源類別的資源查閱。
+  使用此强类型资源类，为所有资源查找
+  重写当前线程的 CurrentUICulture 属性。
 </summary>
 </member>
 </members>

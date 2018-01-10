@@ -24,6 +24,7 @@ Public Class Steam用户    '一个神奇的 Steam Web API
     Public 创号时间 As Date
     Public 在线状态 As String
     Public 现在游戏ID As Long
+    Public 等级 As Long
 
     Public Sub New(ID As String, APIkey As String)
         ID64 = 只要数字(ID)
@@ -75,6 +76,7 @@ Public Class Steam用户    '一个神奇的 Steam Web API
         现在游戏ID = 0
         s = "gameid"
         If 包含(PInfo, s) Then 现在游戏ID = Val(只要数字(Regex.Match(PInfo, s + 引号 + ": " + 引号 + ".*?" + 引号 + ",").ToString))
+        等级 = Val(只要数字(获得Http("https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + Key + "&steamid=" + ID64, "0")))
     End Sub
 
     Public ReadOnly Property 头像链接(Optional size As Integer = 3) As String
