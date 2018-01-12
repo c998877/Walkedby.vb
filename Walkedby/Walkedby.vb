@@ -19,18 +19,18 @@ Module Walkedby '走過去的常用函数合集
     '左右，相当于 left right
     Public Function 左(str As String, i As Object) As String
         Dim s As Integer
-        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
         If s > 0 Then 左 = Left(str, s) Else 左 = ""
     End Function
     Public Function 右(str As String, i As Object) As String
         Dim s As Integer
-        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
         If s > 0 Then 右 = Right(str, s) Else 右 = ""
     End Function
     Public Function 左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
         Dim l As Integer, r As Integer
-        If 左边.GetType = "".GetType Then l = 左边.length Else l = 左边
-        If 右边.GetType = "".GetType Then r = 右边.length Else r = 右边
+        If 左边.GetType.Equals(TypeCode.String) Then l = 左边.length Else l = 左边
+        If 右边.GetType.Equals(TypeCode.String) Then r = 右边.length Else r = 右边
         If l + r >= str.Length Then 左右 = str Else 左右 = 左(str, l) + 右(str, r)
     End Function
 
@@ -38,19 +38,19 @@ Module Walkedby '走過去的常用函数合集
     Public Function 去左(str As String, i As Object) As String
         去左 = ""
         Dim s As Integer
-        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
         If str.Length - s > 0 Then 去左 = Right(str, str.Length - s)
     End Function
     Public Function 去右(str As String, i As Object) As String
         去右 = ""
         Dim s As Integer
-        If i.GetType.Equals("".GetType) Then s = i.length Else s = i
+        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
         If str.Length - s > 0 Then 去右 = Left(str, str.Length - s)
     End Function
     Public Function 去左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
         Dim l As Integer, r As Integer
-        If 左边.GetType = "".GetType Then l = 左边.length Else l = 左边
-        If 右边.GetType = "".GetType Then r = 右边.length Else r = 右边
+        If 左边.GetType.Equals(TypeCode.String) Then l = 左边.length Else l = 左边
+        If 右边.GetType.Equals(TypeCode.String) Then r = 右边.length Else r = 右边
         If l + r >= str.Length Then 去左右 = "" Else 去左右 = Mid(str, l + 1, str.Length - r - l)
     End Function
 
@@ -194,11 +194,11 @@ Module Walkedby '走過去的常用函数合集
         回车规范 = Regex.Replace(回车规范, "\n", vbCrLf)
     End Function
 
-    '获得小写文件后缀名，不包含第一个点
-    Public Function 文件后缀(path As String) As String
-        文件后缀 = ""
+    '获得小写文件格式名，不包含第一个点
+    Public Function 文件格式(path As String) As String
+        文件格式 = ""
         If path.Length < 4 Or Not 包含(path, ".") Then Exit Function
-        文件后缀 = LCase(去左(Regex.Match(文件名(path), "\..*?$").ToString, 1))
+        文件格式 = LCase(去左(Regex.Match(文件名(path), "\..*?$").ToString, 1))
     End Function
 
     '获得路径或者倒数第二层文件夹
@@ -264,7 +264,7 @@ Module Walkedby '走過去的常用函数合集
     '读取快捷方式的来源地
     Public Function 快捷方式目的(path As String) As String
         快捷方式目的 = ""
-        If 文件后缀(path).Equals("lnk") And 文件存在(path) Then
+        If 文件格式(path).Equals("lnk") And 文件存在(path) Then
             Dim s As String = 路径(path) + 随机字母(10) + ".lnk"
             FileCopy(path, s)
             Try
@@ -473,11 +473,21 @@ Module Walkedby '走過去的常用函数合集
     '便捷的控制台输出，多个选项自动分开
     Public Sub 控制台(a As Object, Optional b As Object = Nothing, Optional c As Object = Nothing, Optional d As Object = Nothing, Optional e As Object = Nothing)
         Dim s As String = ""
-        If Not IsNothing(a) Then s = s + a.ToString + vbTab
-        If Not IsNothing(b) Then s = s + b.ToString + vbTab
-        If Not IsNothing(c) Then s = s + c.ToString + vbTab
-        If Not IsNothing(d) Then s = s + d.ToString + vbTab
-        If Not IsNothing(e) Then s = s + e.ToString
+        If Not IsNothing(a) Then
+            If a.GetType.Equals(TypeCode.String) Then s = s + a + vbTab Else s = s + a.ToString + vbTab
+        End If
+        If Not IsNothing(b) Then
+            If b.GetType.Equals(TypeCode.String) Then s = s + b + vbTab Else s = s + b.ToString + vbTab
+        End If
+        If Not IsNothing(c) Then
+            If c.GetType.Equals(TypeCode.String) Then s = s + c + vbTab Else s = s + c.ToString + vbTab
+        End If
+        If Not IsNothing(d) Then
+            If d.GetType.Equals(TypeCode.String) Then s = s + d + vbTab Else s = s + d.ToString + vbTab
+        End If
+        If Not IsNothing(e) Then
+            If e.GetType.Equals(TypeCode.String) Then s = s + e + vbTab Else s = s + e.ToString + vbTab
+        End If
         Console.WriteLine(s)
     End Sub
 
