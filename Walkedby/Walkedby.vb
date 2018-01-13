@@ -19,18 +19,18 @@ Module Walkedby '走過去的常用函数合集
     '左右，相当于 left right
     Public Function 左(str As String, i As Object) As String
         Dim s As Integer
-        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
+        If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If s > 0 Then 左 = Left(str, s) Else 左 = ""
     End Function
     Public Function 右(str As String, i As Object) As String
         Dim s As Integer
-        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
+        If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If s > 0 Then 右 = Right(str, s) Else 右 = ""
     End Function
     Public Function 左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
         Dim l As Integer, r As Integer
-        If 左边.GetType.Equals(TypeCode.String) Then l = 左边.length Else l = 左边
-        If 右边.GetType.Equals(TypeCode.String) Then r = 右边.length Else r = 右边
+        If 左边.GetType.Equals(String.Empty.GetType) Then l = 左边.length Else l = 左边
+        If 右边.GetType.Equals(String.Empty.GetType) Then r = 右边.length Else r = 右边
         If l + r >= str.Length Then 左右 = str Else 左右 = 左(str, l) + 右(str, r)
     End Function
 
@@ -38,19 +38,19 @@ Module Walkedby '走過去的常用函数合集
     Public Function 去左(str As String, i As Object) As String
         去左 = ""
         Dim s As Integer
-        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
+        If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If str.Length - s > 0 Then 去左 = Right(str, str.Length - s)
     End Function
     Public Function 去右(str As String, i As Object) As String
         去右 = ""
         Dim s As Integer
-        If i.GetType.Equals(TypeCode.String) Then s = i.length Else s = i
+        If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If str.Length - s > 0 Then 去右 = Left(str, str.Length - s)
     End Function
     Public Function 去左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
         Dim l As Integer, r As Integer
-        If 左边.GetType.Equals(TypeCode.String) Then l = 左边.length Else l = 左边
-        If 右边.GetType.Equals(TypeCode.String) Then r = 右边.length Else r = 右边
+        If 左边.GetType.Equals(String.Empty.GetType) Then l = 左边.length Else l = 左边
+        If 右边.GetType.Equals(String.Empty.GetType) Then r = 右边.length Else r = 右边
         If l + r >= str.Length Then 去左右 = "" Else 去左右 = Mid(str, l + 1, str.Length - r - l)
     End Function
 
@@ -97,6 +97,13 @@ Module Walkedby '走過去的常用函数合集
         If multiLine Then x = "([\s\S]*?)"
         Dim s As String = Regex.Match(str, head + x + tail).ToString
         正则提取 = 去左右(s, head, tail)
+    End Function
+
+    '去掉多余的回车换行
+    Public Function 去多余回车(str As String) As String
+        str = 回车规范(str)
+        去多余回车 = str
+        去多余回车 = Regex.Replace(str, "[\r\n]{5,}", vbCrLf + vbCrLf)
     End Function
 
     '取得范围内的随机整数
@@ -190,8 +197,17 @@ Module Walkedby '走過去的常用函数合集
 
     '回车规范化，统一到 vbcrlf
     Public Function 回车规范(str As String) As String
-        回车规范 = 正则去除(str, "\r")
-        回车规范 = Regex.Replace(回车规范, "\n", vbCrLf)
+        Dim cr As Integer = Regex.Matches(str, "\r").Count
+        Dim lf As Integer = Regex.Matches(str, "\n").Count
+        If cr > lf Then
+            str = 正则去除(str, "\n")
+            回车规范 = Regex.Replace(str, "\r", vbCrLf)
+        ElseIf cr < lf Then
+            str = 正则去除(str, "\r")
+            回车规范 = Regex.Replace(str, "\n", vbCrLf)
+        ElseIf cr = lf Then
+            回车规范 = str
+        End If
     End Function
 
     '获得小写文件格式名，不包含第一个点
@@ -474,19 +490,19 @@ Module Walkedby '走過去的常用函数合集
     Public Sub 控制台(a As Object, Optional b As Object = Nothing, Optional c As Object = Nothing, Optional d As Object = Nothing, Optional e As Object = Nothing)
         Dim s As String = ""
         If Not IsNothing(a) Then
-            If a.GetType.Equals(TypeCode.String) Then s = s + a + vbTab Else s = s + a.ToString + vbTab
+            If a.GetType.Equals(String.Empty.GetType) Then s = s + a + vbTab Else s = s + a.ToString + vbTab
         End If
         If Not IsNothing(b) Then
-            If b.GetType.Equals(TypeCode.String) Then s = s + b + vbTab Else s = s + b.ToString + vbTab
+            If b.GetType.Equals(String.Empty.GetType) Then s = s + b + vbTab Else s = s + b.ToString + vbTab
         End If
         If Not IsNothing(c) Then
-            If c.GetType.Equals(TypeCode.String) Then s = s + c + vbTab Else s = s + c.ToString + vbTab
+            If c.GetType.Equals(String.Empty.GetType) Then s = s + c + vbTab Else s = s + c.ToString + vbTab
         End If
         If Not IsNothing(d) Then
-            If d.GetType.Equals(TypeCode.String) Then s = s + d + vbTab Else s = s + d.ToString + vbTab
+            If d.GetType.Equals(String.Empty.GetType) Then s = s + d + vbTab Else s = s + d.ToString + vbTab
         End If
         If Not IsNothing(e) Then
-            If e.GetType.Equals(TypeCode.String) Then s = s + e + vbTab Else s = s + e.ToString + vbTab
+            If e.GetType.Equals(String.Empty.GetType) Then s = s + e + vbTab Else s = s + e.ToString + vbTab
         End If
         Console.WriteLine(s)
     End Sub
@@ -573,7 +589,6 @@ Module Walkedby '走過去的常用函数合集
         If g.Length < 1 Then g = 随机字母(40)
         走解密 = g
     End Function
-
 
 End Module
 
