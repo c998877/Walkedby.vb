@@ -1,4 +1,5 @@
 ﻿Imports Microsoft.VisualBasic.ApplicationServices
+Imports Microsoft.VisualBasic.Devices
 
 Namespace My
     ' MyApplication 可以使用下列事件: 
@@ -7,7 +8,10 @@ Namespace My
     ' UnhandledException:在應用程式發生未處理的例外狀況時引發。
     ' StartupNextInstance:在啟動單一執行個體應用程式且應用程式已於使用中時引發。 
     ' NetworkAvailabilityChanged:在連接或中斷網路連線時引發。
+
     Partial Friend Class MyApplication
+
+
 
         Private Sub MyApplication_Startup(sender As Object, e As StartupEventArgs) Handles Me.Startup
 
@@ -17,5 +21,8 @@ Namespace My
 
         End Sub
 
+        Private Sub MyApplication_UnhandledException(sender As Object, e As UnhandledExceptionEventArgs) Handles Me.UnhandledException
+
+        End Sub
     End Class
 End Namespace

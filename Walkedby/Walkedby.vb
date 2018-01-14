@@ -195,8 +195,18 @@ Module Walkedby '走過去的常用函数合集
         Next
     End Function
 
+    '第一个词
+    Public Function 第一个词(str As String) As String
+        第一个词 = ""
+        str = Trim(str) + " "
+        If str.Length < 2 Then Exit Function
+        str = Regex.Match(str, "(\S).*? ").ToString
+        第一个词 = Trim(str)
+    End Function
+
     '回车规范化，统一到 vbcrlf
     Public Function 回车规范(str As String) As String
+        回车规范 = str
         Dim cr As Integer = Regex.Matches(str, "\r").Count
         Dim lf As Integer = Regex.Matches(str, "\n").Count
         If cr > lf Then
@@ -224,6 +234,8 @@ Module Walkedby '走過去的常用函数合集
 
     '去掉不应该有的符号
     Public Function 文件名规范(path As String, Optional 去斜杠 As Boolean = False) As String
+        文件名规范 = ""
+        If path.Length < 1 Then Exit Function
         path = Replace(path, "/", "\")
         文件名规范 = 去除(path, "*", "?", "<", ">", "|", 引号)
         文件名规范 = Regex.Replace(文件名规范, "\\{2,}", "\")
@@ -235,6 +247,27 @@ Module Walkedby '走過去的常用函数合集
         path = Replace(path, "/", "\")
         If 右(path, 1).Equals("\") Then path = 去右(path, 1)
         文件名 = 文件名规范(去除(StrReverse(Regex.Match(StrReverse(path), ".*?\\").ToString), "\"))
+    End Function
+
+    '文件大小，单位默认是 MB
+    Public Function 文件大小(path As String, Optional unit As String = "M") As Single
+        文件大小 = 0
+        If 文件存在(path, False) = False Then Exit Function
+        Dim h As Long = FileLen(path)
+        Select Case 左(UCase(unit), 1)
+            Case "B"
+                文件大小 = h
+            Case "K"
+                文件大小 = h / 1024
+            Case "G"
+                文件大小 = h / 1024 / 1024 / 1024
+            Case "T"
+                文件大小 = h / 1024 / 1024 / 1024 / 1024
+            Case "P"
+                文件大小 = h / 1024 / 1024 / 1024 / 1024 / 1024
+            Case Else
+                文件大小 = h / 1024 / 1024
+        End Select
     End Function
 
     '运行 CMD 命令
@@ -255,14 +288,14 @@ Module Walkedby '走過去的常用函数合集
     '到指定的路径运行 cmd
     Public Sub 运行路径CMD(path As String, a As String, Optional b As String = "", Optional c As String = "", Optional d As String = "", Optional e As String = "")
         If path.Length < 3 Or Len(a) < 1 Then Exit Sub
-        Dim s As String = "cmd.exe /c " + 左(path, 2)
-        If path.Length > 3 Then s = s + " & cd " + 引号 + path + 引号
+        Dim s As String = "cmd.exe /c " + LCase(左(path, 2))
+        If 尾(path, "\") And path.Length > 3 Then path = 去右(path, "\")
+        s = s + " & cd " + 引号 + LCase(path) + 引号
         If Len(a) < 1 Then Exit Sub Else s = s + " & " + a
         If Len(b) > 0 Then s = s + " & " + b
         If Len(c) > 0 Then s = s + " & " + c
         If Len(d) > 0 Then s = s + " & " + d
         If Len(e) > 0 Then s = s + " & " + e
-        Console.WriteLine(s)
         If 包含(s, "pause") Then
             Shell(s)
         Else
@@ -347,11 +380,23 @@ Module Walkedby '走過去的常用函数合集
         File.AppendAllText(path, str, Text.Encoding.UTF8)
     End Sub
 
+    '检查指定名字的程序是否在运行状态，不要后缀名
+    Public Function 程序运行中(Pname As String) As Boolean
+        程序运行中 = False
+        Pname = 去右(Pname, 文件格式(Pname))
+        Dim x As Process() = Process.GetProcessesByName(Pname)
+        If x.Count > 0 Then 程序运行中 = True
+    End Function
+
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
         If Not 文件存在(path) Then Exit Function
-        读 = File.ReadAllText(path, Text.Encoding.UTF8)
+        Try
+            读 = File.ReadAllText(path, Text.Encoding.UTF8)
+        Catch
+            读 = 默认
+        End Try
     End Function
 
     '获得 str 的行数，最少为1行
@@ -363,8 +408,8 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '读取 str 的第 i 行
-    Public Function 行(str As String, i As Integer) As String
-        行 = ""
+    Public Function 行(str As String, i As Integer, Optional def As String = "") As String
+        行 = def
         str = 回车规范(str)
         Dim mc As MatchCollection = Regex.Matches(str, ".*?(\r|$)")
         If mc.Count < 1 Then Exit Function
@@ -374,7 +419,7 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '改变 str 的第 i 行为 change
-    Public Function 改行(str As String, i As String, change As String) As String
+    Public Function 改行(str As String, i As Integer, change As String) As String
         If str.Length < 2 Then str = vbCrLf
         str = 回车规范(str)
         改行 = str
@@ -420,11 +465,11 @@ Module Walkedby '走過去的常用函数合集
         If l.Count < 1 Then Exit Sub
         Dim x As Collection = New Collection
         For Each i As String In l
-            If 在列表(x, i) = False Then x.Add(i)
+            If 在列表(x, i) = False And Trim(i).Length > 0 Then x.Add(i)
         Next
-        l.Clear()
+        l.clear
         For Each i As Object In x
-            l.Add(i.ToString)
+            If Trim(i).ToString.Length > 0 Then l.Add(i.ToString)
         Next
     End Sub
 
