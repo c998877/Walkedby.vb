@@ -110,7 +110,7 @@ Partial Class Form1
         Me.Margin = New System.Windows.Forms.Padding(5)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Form1"
+        Me.Text = "Workshop 简介批量改进"
         Me.ResumeLayout(False)
 
     End Sub

@@ -6,10 +6,11 @@ Imports Microsoft
 Imports System.Text
 Imports System.ComponentModel
 Imports System.Web
-Imports System.Net
 Imports System.Threading
 Imports System.Net.WebClient
 Imports System.Threading.Tasks
+Imports System.Net
+Imports System.Net.Mail
 
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
@@ -634,6 +635,22 @@ Module Walkedby '走過去的常用函数合集
         If g.Length < 1 Then g = 随机字母(40)
         走解密 = g
     End Function
+
+    '使用 STMP 利用QQ的服务器发送简易的文字信息
+    Public Sub 发QQ邮件(你的邮箱 As String, 密码 As String, 收信人 As String, 标题 As String, 正文 As String)
+        Try
+            Dim hm As SmtpClient = New SmtpClient
+            With hm
+                .Host = "smtp.qq.com"
+                .EnableSsl = True
+                .Port = 587
+                .UseDefaultCredentials = False
+                .Credentials = New NetworkCredential(你的邮箱, 密码)
+                .Send(你的邮箱, 收信人, 标题, 正文)
+            End With
+        Catch ex As Exception
+        End Try
+    End Sub
 
 End Module
 

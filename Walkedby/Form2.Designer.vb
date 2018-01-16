@@ -24,17 +24,38 @@ Partial Class Form2
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.RR = New System.Windows.Forms.RichTextBox()
         Me.SuspendLayout()
         '
         'Timer1
         '
         Me.Timer1.Enabled = True
         '
+        'Button1
+        '
+        Me.Button1.Location = New System.Drawing.Point(48, 29)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(155, 68)
+        Me.Button1.TabIndex = 0
+        Me.Button1.Text = "Button1"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
+        'RR
+        '
+        Me.RR.Location = New System.Drawing.Point(166, 201)
+        Me.RR.Name = "RR"
+        Me.RR.Size = New System.Drawing.Size(251, 148)
+        Me.RR.TabIndex = 1
+        Me.RR.Text = ""
+        '
         'Form2
         '
         Me.AllowDrop = True
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.ClientSize = New System.Drawing.Size(719, 442)
+        Me.Controls.Add(Me.RR)
+        Me.Controls.Add(Me.Button1)
         Me.Font = New System.Drawing.Font("微软雅黑", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Name = "Form2"
         Me.Text = "Form2"
@@ -42,4 +63,6 @@ Partial Class Form2
 
     End Sub
     Friend WithEvents Timer1 As Timer
+    Friend WithEvents Button1 As Button
+    Friend WithEvents RR As RichTextBox
 End Class
