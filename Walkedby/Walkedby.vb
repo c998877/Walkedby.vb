@@ -11,6 +11,8 @@ Imports System.Net.WebClient
 Imports System.Threading.Tasks
 Imports System.Net
 Imports System.Net.Mail
+Imports System.Security.Permissions
+Imports Microsoft.Win32
 
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
@@ -334,7 +336,7 @@ Module Walkedby '走過去的常用函数合集
         If Not 右(程序目录, 1).Equals("\") Then 程序目录 = 程序目录 + "\"
     End Function
 
-    '取得本程序的文件名
+    '取得本程序的文件名，包含".exe"
     Public Function 程序名() As String
         程序名 = 文件名(Application.ExecutablePath)
     End Function
@@ -370,6 +372,7 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
+        If 文件存在(路径(path), False) = False Then Directory.CreateDirectory(路径(path))
         If Not 文件可写(path) Then Exit Sub
         File.WriteAllText(path, str, Text.Encoding.UTF8)
     End Sub
@@ -456,6 +459,19 @@ Module Walkedby '走過去的常用函数合集
         For Each i As Object In l
             If str.Equals(i.ToString) Then
                 在列表 = True
+                Exit Function
+            End If
+        Next
+    End Function
+
+    '检测 str 是否是列表 l 里的某一项的一部分
+    Public Function 包含在列表(l As Object, str As String) As Boolean
+        包含在列表 = False
+        If str.Length = 0 Then Exit Function
+        If l.Count < 1 Then Exit Function
+        For Each i As Object In l
+            If 包含(i.ToString, str) Then
+                包含在列表 = True
                 Exit Function
             End If
         Next
@@ -650,6 +666,23 @@ Module Walkedby '走過去的常用函数合集
             End With
         Catch ex As Exception
         End Try
+    End Sub
+
+    '检查是否已经打了补丁并且 IE 版本为最新版本
+    Public Function 最新IE() As Boolean
+        最新IE = False
+        Dim h As WebBrowser = New WebBrowser
+        Dim s As Integer = h.Version.Major
+        h.Dispose()
+        If s < 11 Then Exit Function
+        Dim r As RegistryKey = Registry.CurrentUser.CreateSubKey("Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION")
+        If (r.GetValue(程序名)) <> 11001 Then Exit Function
+        最新IE = True
+    End Function
+
+    '修复多行文本框无法快捷键全选的问题
+    Public Sub 文本框全选(sender As Object, e As KeyEventArgs)
+        If e.Control AndAlso e.KeyCode = Keys.A Then sender.SelectAll()
     End Sub
 
 End Module

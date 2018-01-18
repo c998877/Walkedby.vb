@@ -34,7 +34,7 @@ Partial Class Form2
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(48, 29)
+        Me.Button1.Location = New System.Drawing.Point(12, 321)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(155, 68)
         Me.Button1.TabIndex = 0
@@ -43,9 +43,9 @@ Partial Class Form2
         '
         'RR
         '
-        Me.RR.Location = New System.Drawing.Point(166, 201)
+        Me.RR.Location = New System.Drawing.Point(71, 29)
         Me.RR.Name = "RR"
-        Me.RR.Size = New System.Drawing.Size(251, 148)
+        Me.RR.Size = New System.Drawing.Size(603, 401)
         Me.RR.TabIndex = 1
         Me.RR.Text = ""
         '
@@ -54,8 +54,8 @@ Partial Class Form2
         Me.AllowDrop = True
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.ClientSize = New System.Drawing.Size(719, 442)
-        Me.Controls.Add(Me.RR)
         Me.Controls.Add(Me.Button1)
+        Me.Controls.Add(Me.RR)
         Me.Font = New System.Drawing.Font("微软雅黑", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Name = "Form2"
         Me.Text = "Form2"
