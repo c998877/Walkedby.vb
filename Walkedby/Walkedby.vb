@@ -372,15 +372,16 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
+        If path(1).Equals(":") = False Then path = 程序目录() + path
         If 文件存在(路径(path), False) = False Then Directory.CreateDirectory(路径(path))
         If Not 文件可写(path) Then Exit Sub
         File.WriteAllText(path, str, Text.Encoding.UTF8)
     End Sub
 
     '写入 str 到 path 文件的末尾
-    Public Sub 附写(path As String, str As String, Optional addenter As Boolean = True)
+    Public Sub 附写(path As String, str As String, Optional AddEnter As Boolean = True)
         If Not 文件可写(path) Then Exit Sub
-        If addenter Then str = vbCrLf + str
+        If AddEnter Then str = vbCrLf + str
         File.AppendAllText(path, str, Text.Encoding.UTF8)
     End Sub
 
@@ -395,6 +396,8 @@ Module Walkedby '走過去的常用函数合集
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
+        If path(1).Equals(":") = False Then path = 程序目录() + path
+        控制台(path)
         If Not 文件存在(path) Then Exit Function
         Try
             读 = File.ReadAllText(path, Text.Encoding.UTF8)

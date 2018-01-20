@@ -10,29 +10,30 @@ Imports System.Net
 Imports System.Net.Mail
 Imports System.Threading
 Imports System.Threading.Tasks
+Imports System.Xml
 
 Public Class Form2
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Dim p As String = ("E:\a.gma")
-        RR.Text = ""
-        Dim re As Stream = File.Open(p, FileMode.Open)
-        Dim x As BinaryReader
-        x = New BinaryReader(re, Encoding.UTF8)
-        For Each i As Byte In x.ReadBytes(re.Length)
-            Dim m As String = i.ToString
-            Dim h As Integer = i
-            If (i >= 65 And i <= 90) Or (i >= 97 And i <= 122) Or (i >= 48 And i <= 57) Or i = 32 Then
-                m = ChrW(m)
-                If (i >= 48 And i <= 57) Then m = "n" + m
-            Else
-                m = " " + m + " "
-            End If
-            RR.Text = RR.Text + m
-        Next
-        x.Close()
-        re.Close()
+    Dim r As Long = 0
+    Dim b As Long = 0
+
+    Dim th As Thread = New Thread(AddressOf GoFuck)
+
+    Sub GoFuck()
+
     End Sub
 
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        th = New Thread(AddressOf GoFuck)
+        th.Start()
+    End Sub
+
+    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub Form2_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        th.Abort()
+    End Sub
 
 End Class
