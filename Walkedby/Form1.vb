@@ -11,7 +11,6 @@ Imports System.Threading
 Imports System.Threading.Tasks
 Imports System.Media
 Imports System.Media.SystemSounds
-Imports System.Device.Location
 Imports System.Object
 
 Public Class Form1

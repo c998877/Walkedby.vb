@@ -14,9 +14,6 @@ Imports System.Xml
 
 Public Class Form2
 
-    Dim r As Long = 0
-    Dim b As Long = 0
-
     Dim th As Thread = New Thread(AddressOf GoFuck)
 
     Sub GoFuck()
@@ -24,16 +21,16 @@ Public Class Form2
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        th = New Thread(AddressOf GoFuck)
-        th.Start()
+        写设置(随机字母(3), 随机)
+        RR.Text = 设置XML()
     End Sub
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
+        RR.Text = 设置XML()
     End Sub
 
     Private Sub Form2_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        th.Abort()
+
     End Sub
 
 End Class

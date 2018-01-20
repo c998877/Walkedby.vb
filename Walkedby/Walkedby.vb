@@ -7,12 +7,12 @@ Imports System.Text
 Imports System.ComponentModel
 Imports System.Web
 Imports System.Threading
-Imports System.Net.WebClient
 Imports System.Threading.Tasks
 Imports System.Net
 Imports System.Net.Mail
 Imports System.Security.Permissions
 Imports Microsoft.Win32
+Imports System.Xml
 
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
@@ -349,7 +349,7 @@ Module Walkedby '走過去的常用函数合集
     '检测文件或者路径是否存在 
     Public Function 文件存在(path As String, Optional 是文件夹 As Boolean = False) As Boolean
         文件存在 = False
-        If path.Length < 3 Then Exit Function
+        If path.Length < 2 Then Exit Function
         path = 文件名规范(path)
         If 是文件夹 Then 文件存在 = Directory.Exists(path) Else 文件存在 = File.Exists(path)
     End Function
@@ -357,7 +357,7 @@ Module Walkedby '走過去的常用函数合集
     '检测文件是否处于可写入状态
     Public Function 文件可写(path As String) As Boolean
         文件可写 = False
-        If path.Length < 4 Then Exit Function
+        If path.Length < 2 Then Exit Function
         If 文件存在(path) = False Then
             文件可写 = True
         Else
@@ -372,7 +372,6 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
-        If path(1).Equals(":") = False Then path = 程序目录() + path
         If 文件存在(路径(path), False) = False Then Directory.CreateDirectory(路径(path))
         If Not 文件可写(path) Then Exit Sub
         File.WriteAllText(path, str, Text.Encoding.UTF8)
@@ -396,7 +395,6 @@ Module Walkedby '走過去的常用函数合集
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
-        If path(1).Equals(":") = False Then path = 程序目录() + path
         控制台(path)
         If Not 文件存在(path) Then Exit Function
         Try
@@ -688,7 +686,59 @@ Module Walkedby '走過去的常用函数合集
         If e.Control AndAlso e.KeyCode = Keys.A Then sender.SelectAll()
     End Sub
 
+    '使用 XML 保存用户信息，不依赖 My.Settings 方便用户卸载
+    Private 设置 As XmlDocument
+    Public Function 设置XML() As String
+        设置XML = 设置.OuterXml
+    End Function
+
+    '读入初始信息使用，需要放在程序开启处
+    Public Sub 读取设置()
+        清空设置()
+        Dim h As String = 程序目录() + 去右(程序名, 4) + "_Saves.XML"
+        Dim s As String = 读(h)
+        If 头(s, "<?xml version=""1.0"" encoding=""UTF-8""?><root>") And 尾(s, "</root>") Then
+            Try
+                设置.LoadXml(s)
+            Catch ex As Exception
+                清空设置()
+            End Try
+        End If
+    End Sub
+
+    '清空所有设置
+    Public Sub 清空设置()
+        设置 = New XmlDocument
+        Dim h As String = "<?xml version=""1.0"" encoding=""UTF-8""?><root></root>"
+        设置.LoadXml(h)
+    End Sub
+
+    '放在程序结束处，保存设置
+    Public Sub 保存设置()
+        Dim h As String = 程序目录() + 去右(程序名, 4) + "_Saves.XML"
+        写(h, 设置XML)
+    End Sub
+
+    Public Sub 写设置(ID As String, Value As Object)
+        Dim h As String
+        If Value.GetType.Equals(String.Empty.GetType) Then h = Value Else h = Value.ToString
+        Dim r As XmlNode = 设置.SelectSingleNode("root"), x As XmlNode
+        x = r.SelectSingleNode(ID)
+        If IsNothing(x) = False Then r.RemoveChild(x)
+        x = 设置.CreateElement(ID)
+        x.InnerText = h
+        r.AppendChild(x)
+    End Sub
+
+    Public Function 读设置(ID As String, Optional def As String = "") As String
+        Dim r As XmlNode = 设置.SelectSingleNode("root"), x As XmlNode
+        x = r.SelectSingleNode(ID)
+        If IsNothing(x) = False Then
+            读设置 = x.InnerText
+        Else
+            读设置 = def
+            写设置(ID, def)
+        End If
+    End Function
+
 End Module
-
-
-
