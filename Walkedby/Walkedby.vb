@@ -70,7 +70,7 @@ Module Walkedby '走過去的常用函数合集
     'find 是否包含在 str 里，默认不检查大小写
     Public Function 包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
         包含 = False
-        If str.Length < 1 Or find.Length < 1 Or str.Length < find.Length Then Exit Function
+        If str.Length < 1 OrElse find.Length < 1 OrElse str.Length < find.Length Then Exit Function
         If forceCase = False Then
             str = LCase(str)
             find = LCase(find)
@@ -79,7 +79,7 @@ Module Walkedby '走過去的常用函数合集
     End Function
     Public Function 正则包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
         正则包含 = False
-        If str.Length < 1 Or find.Length < 1 Or str.Length < find.Length Then Exit Function
+        If str.Length < 1 OrElse find.Length < 1 OrElse str.Length < find.Length Then Exit Function
         If Not forceCase Then
             str = LCase(str)
             find = LCase(find)
@@ -90,7 +90,7 @@ Module Walkedby '走過去的常用函数合集
     '正则提取头尾字符中间的字符
     Public Function 正则提取(str As String, head As String, tail As String, Optional multiLine As Boolean = True, Optional forceCase As Boolean = True) As String
         正则提取 = ""
-        If str.Length < 1 Or head.Length + tail.Length > str.Length Or head.Length < 1 Or tail.Length < 1 Then Exit Function
+        If str.Length < 1 OrElse head.Length + tail.Length > str.Length OrElse head.Length < 1 OrElse tail.Length < 1 Then Exit Function
         If Not forceCase Then
             str = LCase(str)
             head = LCase(head)
@@ -127,10 +127,10 @@ Module Walkedby '走過去的常用函数合集
 
     '随机一个颜色，但是可以固定RGBA
     Public Function 随机颜色(Optional R As Integer = 0, Optional G As Integer = 0, Optional B As Integer = 0, Optional A As Integer = 255) As Color
-        If A < 1 Or A > 255 Then A = 随机(1, 255)
-        If R < 1 Or R > 255 Then R = 随机(1, 255)
-        If G < 1 Or G > 255 Then G = 随机(1, 255)
-        If B < 1 Or B > 255 Then B = 随机(1, 255)
+        If A < 1 OrElse A > 255 Then A = 随机(1, 255)
+        If R < 1 OrElse R > 255 Then R = 随机(1, 255)
+        If G < 1 OrElse G > 255 Then G = 随机(1, 255)
+        If B < 1 OrElse B > 255 Then B = 随机(1, 255)
         随机颜色 = Color.FromArgb(A, R, G, B)
     End Function
 
@@ -176,16 +176,16 @@ Module Walkedby '走過去的常用函数合集
     '从 str 中去除对应的正则文字
     Public Function 正则去除(str As String, a As String, Optional b As String = "", Optional c As String = "", Optional d As String = "", Optional e As String = "", Optional f As String = "", Optional g As String = "", Optional h As String = "", Optional i As String = "")
         正则去除 = str
-        If a.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, a, "")
-        If b.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, b, "")
-        If c.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, c, "")
-        If d.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, d, "")
-        If e.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, e, "")
-        If e.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, e, "")
-        If f.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, f, "")
-        If g.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, g, "")
-        If h.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, h, "")
-        If i.Length > 0 And 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, i, "")
+        If a.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, a, "")
+        If b.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, b, "")
+        If c.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, c, "")
+        If d.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, d, "")
+        If e.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, e, "")
+        If e.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, e, "")
+        If f.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, f, "")
+        If g.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, g, "")
+        If h.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, h, "")
+        If i.Length > 0 AndAlso 正则去除.length > 0 Then 正则去除 = Regex.Replace(正则去除, i, "")
         If 正则去除 = Nothing Then 正则去除 = ""
     End Function
 
@@ -226,7 +226,7 @@ Module Walkedby '走過去的常用函数合集
     '获得小写文件格式名，不包含第一个点
     Public Function 文件格式(path As String) As String
         文件格式 = ""
-        If path.Length < 4 Or Not 包含(path, ".") Then Exit Function
+        If path.Length < 4 OrElse Not 包含(path, ".") Then Exit Function
         文件格式 = LCase(去左(Regex.Match(文件名(path), "\..*?$").ToString, 1))
     End Function
 
@@ -290,9 +290,9 @@ Module Walkedby '走過去的常用函数合集
 
     '到指定的路径运行 cmd
     Public Sub 运行路径CMD(path As String, a As String, Optional b As String = "", Optional c As String = "", Optional d As String = "", Optional e As String = "")
-        If path.Length < 3 Or Len(a) < 1 Then Exit Sub
+        If path.Length < 3 OrElse Len(a) < 1 Then Exit Sub
         Dim s As String = "cmd.exe /c " + LCase(左(path, 2))
-        If 尾(path, "\") And path.Length > 3 Then path = 去右(path, "\")
+        If 尾(path, "\") AndAlso path.Length > 3 Then path = 去右(path, "\")
         s = s + " & cd " + 引号 + LCase(path) + 引号
         If Len(a) < 1 Then Exit Sub Else s = s + " & " + a
         If Len(b) > 0 Then s = s + " & " + b
@@ -316,7 +316,7 @@ Module Walkedby '走過去的常用函数合集
     '读取快捷方式的来源地
     Public Function 快捷方式目的(path As String) As String
         快捷方式目的 = ""
-        If 文件格式(path).Equals("lnk") And 文件存在(path) Then
+        If 文件格式(path).Equals("lnk") AndAlso 文件存在(path) Then
             Dim s As String = 路径(path) + 随机字母(10) + ".lnk"
             FileCopy(path, s)
             Try
@@ -483,7 +483,7 @@ Module Walkedby '走過去的常用函数合集
         If l.Count < 1 Then Exit Sub
         Dim x As Collection = New Collection
         For Each i As String In l
-            If 在列表(x, i) = False And Trim(i).Length > 0 Then x.Add(i)
+            If 在列表(x, i) = False AndAlso Trim(i).Length > 0 Then x.Add(i)
         Next
         l.clear
         For Each i As Object In x
@@ -543,7 +543,7 @@ Module Walkedby '走過去的常用函数合集
 
     '打开网址到浏览器
     Public Sub 浏览器打开(str As String)
-        If Not (头(str, "https://") Or 头(str, "http://") Or 头(str, "file://")) Then
+        If Not (头(str, "https://") OrElse 头(str, "http://") OrElse 头(str, "file://")) Then
             str = "http://" + str
         End If
         Process.Start(str)
@@ -552,20 +552,21 @@ Module Walkedby '走過去的常用函数合集
     '便捷的控制台输出，多个选项自动分开
     Public Sub 控制台(a As Object, Optional b As Object = Nothing, Optional c As Object = Nothing, Optional d As Object = Nothing, Optional e As Object = Nothing)
         Dim s As String = ""
+        Dim t As String = "     "
         If Not IsNothing(a) Then
-            If a.GetType.Equals(String.Empty.GetType) Then s = s + a + vbTab Else s = s + a.ToString + vbTab
+            If a.GetType.Equals(String.Empty.GetType) Then s = s + a + vbTab Else s = s + a.ToString + t
         End If
         If Not IsNothing(b) Then
-            If b.GetType.Equals(String.Empty.GetType) Then s = s + b + vbTab Else s = s + b.ToString + vbTab
+            If b.GetType.Equals(String.Empty.GetType) Then s = s + b + vbTab Else s = s + b.ToString + t
         End If
         If Not IsNothing(c) Then
-            If c.GetType.Equals(String.Empty.GetType) Then s = s + c + vbTab Else s = s + c.ToString + vbTab
+            If c.GetType.Equals(String.Empty.GetType) Then s = s + c + vbTab Else s = s + c.ToString + t
         End If
         If Not IsNothing(d) Then
-            If d.GetType.Equals(String.Empty.GetType) Then s = s + d + vbTab Else s = s + d.ToString + vbTab
+            If d.GetType.Equals(String.Empty.GetType) Then s = s + d + vbTab Else s = s + d.ToString + t
         End If
         If Not IsNothing(e) Then
-            If e.GetType.Equals(String.Empty.GetType) Then s = s + e + vbTab Else s = s + e.ToString + vbTab
+            If e.GetType.Equals(String.Empty.GetType) Then s = s + e + vbTab Else s = s + e.ToString + t
         End If
         Console.WriteLine(s)
     End Sub
@@ -608,49 +609,6 @@ Module Walkedby '走過去的常用函数合集
             在线图片 = Image.FromStream(hq.GetResponse.GetResponseStream)
         Catch
         End Try
-    End Function
-
-    '走過去自己的蜜汁加密和解密
-    Public Function 走加密(str As String) As String
-        走加密 = 随机字母(40)
-        Dim s As String = str
-        If s.Length < 1 Or s.Length * 7 > 8000 Then Exit Function
-        s = 右("0" + Today.Day.ToString, 2) + s
-        Dim g As String = ""
-        For i As Integer = 0 To s.Length - 1
-            Dim w As Integer = w + 2
-            If w > 143 Then w = 143
-            Dim h As String = (AscW(s(i)) + w).ToString
-            Dim fake As Boolean = 随机B()
-            Do While h.Length < 7
-                If 随机B() Then h = 随机字母(1) + h Else h = h + 随机字母(1)
-            Loop
-            g = g & h
-        Next
-        g = g & 随机(180, 20) & 随机字母(1)
-        走加密 = g
-    End Function
-    Public Function 走解密(str As String) As String
-        走解密 = 随机字母(40)
-        Dim s As String = 去除(str, vbCr, vbLf, vbCrLf, " ", vbTab)
-        If s.Length < 1 Or s.Length > 8000 Then Exit Function
-        Dim g As String = ""
-        Dim m As Integer = 0
-        For i As Integer = 1 To s.Length Step 7
-            m = m + 2
-            If m > 143 Then m = 143
-            If Mid(s, i, 7).Length <> 7 Then Exit For
-            Dim h As Integer = Val(只要数字(Mid(s, i, 7)))
-            If h > 65535 Or h < -32768 Then Exit Function
-            g = g & ChrW(h - m)
-        Next
-        If Val(左(g, 2)) <> Today.Day Then
-            g = 随机字母(g.Length)
-        Else
-            g = 去左(g, 2)
-        End If
-        If g.Length < 1 Then g = 随机字母(40)
-        走解密 = g
     End Function
 
     '使用 STMP 利用QQ的服务器发送简易的文字信息
@@ -697,7 +655,7 @@ Module Walkedby '走過去的常用函数合集
         清空设置()
         Dim h As String = 程序目录() + 去右(程序名, 4) + "_Saves.XML"
         Dim s As String = 读(h)
-        If 头(s, "<?xml version=""1.0"" encoding=""UTF-8""?><root>") And 尾(s, "</root>") Then
+        If 头(s, "<?xml version=""1.0"" encoding=""UTF-8""?><root>") AndAlso 尾(s, "</root>") Then
             Try
                 设置.LoadXml(s)
             Catch ex As Exception
