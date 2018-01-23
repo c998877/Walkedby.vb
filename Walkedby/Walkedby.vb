@@ -236,13 +236,14 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '去掉不应该有的符号
-    Public Function 文件名规范(path As String, Optional 去斜杠 As Boolean = False) As String
+    Public Function 文件名规范(path As String, Optional 去斜杠 As Boolean = False, Optional 去引号 As Boolean = False) As String
         文件名规范 = ""
         If path.Length < 1 Then Exit Function
         path = Replace(path, "/", "\")
         文件名规范 = 去除(path, "*", "?", "<", ">", "|", 引号)
         文件名规范 = Regex.Replace(文件名规范, "\\{2,}", "\")
         If 去斜杠 Then 文件名规范 = 去除(文件名规范, "\")
+        If 去引号 Then 文件名规范 = 去除(文件名规范, ":")
     End Function
 
     '从 path 中获得文件或者最后一层文件夹的名字
@@ -332,7 +333,7 @@ Module Walkedby '走過去的常用函数合集
 
     '取得本程序的目录，最后带个"\"
     Public Function 程序目录() As String
-        程序目录 = Application.StartupPath
+        程序目录 =    My.Application.Info.DirectoryPath
         If Not 右(程序目录, 1).Equals("\") Then 程序目录 = 程序目录 + "\"
     End Function
 
