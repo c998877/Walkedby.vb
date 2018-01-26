@@ -11,4 +11,3 @@ E:\VS\Walkedby\Walkedby\obj\Release\Walkedby.pdb
 E:\VS\Walkedby\Walkedby\obj\Release\Walkedby.vbprojResolveAssemblyReference.cache
 E:\VS\Walkedby\Walkedby\bin\Release\Walkedby.exe.config
 E:\VS\Walkedby\Walkedby\obj\Release\Walkedby.Form2.resources
-E:\VS\Walkedby\Walkedby\bin\Release\FastColoredTextBox.dll

@@ -396,7 +396,6 @@ Module Walkedby '走過去的常用函数合集
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
         读 = 默认
-        控制台(path)
         If Not 文件存在(path) Then Exit Function
         Try
             读 = File.ReadAllText(path, Text.Encoding.UTF8)
@@ -512,7 +511,8 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '获得UNIX时间
-    Public Function UNIX时间(time1 As Date) As Long
+    Public Function UNIX时间(Optional time1 As Date = Nothing) As Long
+        If IsNothing(time1) Then time1 = Now
         UNIX时间 = DateDiff("s", "1970-1-1 0:0:0", ConvertTimeToUtc(time1))
     End Function
 
@@ -520,6 +520,11 @@ Module Walkedby '走過去的常用函数合集
     Public Function UNIX时间恢复(u As Long) As Date
         Dim T1970 As Date = "1970-1-1 0:0:0"
         UNIX时间恢复 = ConvertTime(T1970.Add(New TimeSpan(0, 0, 0, u)), Utc, Local)
+    End Function
+
+    '把计算机时间变成北京的时间
+    Public Function 北京时间(time1 As Date) As Date
+        北京时间 = ConvertTimeBySystemTimeZoneId(time1, Local.Id, "China Standard Time")
     End Function
 
     '去掉字符串里不是数字的字符
