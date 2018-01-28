@@ -333,9 +333,14 @@ Module Walkedby '走過去的常用函数合集
 
     '取得本程序的目录，最后带个"\"
     Public Function 程序目录() As String
-        程序目录 =    My.Application.Info.DirectoryPath
+        程序目录 = My.Application.Info.DirectoryPath
         If Not 右(程序目录, 1).Equals("\") Then 程序目录 = 程序目录 + "\"
     End Function
+
+    '给线程权限可以直接篡改控件
+    Public Sub 线程越界()
+        Control.CheckForIllegalCrossThreadCalls = False
+    End Sub
 
     '取得本程序的文件名，包含".exe"
     Public Function 程序名() As String
@@ -591,7 +596,6 @@ Module Walkedby '走過去的常用函数合集
 
     '简易的 HTTP GET ，可以很快获得 HTML 内容
     Public Function 获得Http(url As String, Optional df As String = "ERROR") As String
-        获得Http = df
         If url.Length < 3 Then Exit Function
         If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
         Try
@@ -601,6 +605,7 @@ Module Walkedby '走過去的常用函数合集
             获得Http = sr.ReadToEnd
             sr.Close()
         Catch
+            获得Http = df
         End Try
     End Function
 
