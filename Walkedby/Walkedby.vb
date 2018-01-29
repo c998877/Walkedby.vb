@@ -596,6 +596,7 @@ Module Walkedby '走過去的常用函数合集
 
     '简易的 HTTP GET ，可以很快获得 HTML 内容
     Public Function 获得Http(url As String, Optional df As String = "ERROR") As String
+        获得Http = df
         If url.Length < 3 Then Exit Function
         If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
         Try
