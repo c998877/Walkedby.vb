@@ -227,7 +227,7 @@ Module Walkedby '走過去的常用函数合集
     Public Function 文件格式(path As String) As String
         文件格式 = ""
         If path.Length < 4 OrElse Not 包含(path, ".") Then Exit Function
-        文件格式 = LCase(去左(Regex.Match(文件名(path), "\..*?$").ToString, 1))
+        文件格式 = LCase(去左(Regex.Match(path, "\.+.*").ToString, 1))
     End Function
 
     '获得路径或者倒数第二层文件夹
@@ -393,7 +393,7 @@ Module Walkedby '走過去的常用函数合集
     '检查指定名字的程序是否在运行状态，不要后缀名
     Public Function 程序运行中(Pname As String) As Boolean
         程序运行中 = False
-        Pname = 去右(Pname, 文件格式(Pname))
+        Pname = 去右(Pname, 文件格式(Pname).Length + 1)
         Dim x As Process() = Process.GetProcessesByName(Pname)
         If x.Count > 0 Then 程序运行中 = True
     End Function
