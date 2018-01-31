@@ -716,4 +716,30 @@ Module Walkedby '走過去的常用函数合集
         End If
     End Function
 
+    '用鼠标移动一个控件
+    Private CmX As Integer, CmY As Integer, CmForm As Form, Cm As Control, CmON As Boolean
+
+    Public Sub 拖动控件(winform As Form, c As Control, e As MouseEventArgs)
+        CmForm = winform
+        Cm = c
+        CmON = True
+        CmX = e.X
+        CmY = e.Y
+        AddHandler Cm.MouseMove, AddressOf 正在拖动控件
+        AddHandler Cm.MouseUp, AddressOf 结束拖动控件
+    End Sub
+
+    Private Sub 正在拖动控件()
+        If Not CmON Then Exit Sub
+        Dim i As Integer
+        i = Cursor.Position.X - CmForm.Left() - 10 - CmX
+        If i >= 0 AndAlso i < CmForm.Width - Cm.Width Then Cm.Left = i
+        i = Cursor.Position.Y - CmForm.Top - 35 - CmY
+        If i >= 0 AndAlso i < CmForm.Height - Cm.Height - 35 Then Cm.Top = i
+    End Sub
+
+    Private Sub 结束拖动控件()
+        CmON = False
+    End Sub
+
 End Module
