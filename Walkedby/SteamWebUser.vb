@@ -41,21 +41,21 @@ Public Class Steam用户    '一个神奇的 Steam Web API
         PInfo = 获得Http("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + Key + "&steamids=" + ID64)
         If PInfo.Length < 300 Then PInfo = NoID
         Dim s As String = "personaname"
-        昵称 = 去左右(Regex.Match(PInfo, s + 引号 + ": "".*?" + 引号 + ",").ToString, s.Length + 4, 2)
+        昵称 = 去左右(Regex.Match(PInfo, s + vbQuote + ": "".*?" + vbQuote + ",").ToString, s.Length + 4, 2)
         真实姓名 = ""
         s = "realname"
-        If 包含(PInfo, s) Then 真实姓名 = 去左右(Regex.Match(PInfo, s + 引号 + ": "".*?" + 引号 + ",").ToString, s.Length + 4, 2)
+        If 包含(PInfo, s) Then 真实姓名 = 去左右(Regex.Match(PInfo, s + vbQuote + ": "".*?" + vbQuote + ",").ToString, s.Length + 4, 2)
         s = "profileurl"
-        主页 = 去左右(Regex.Match(PInfo, s + 引号 + ": "".*?" + 引号 + ",").ToString, s.Length + 4, 2)
+        主页 = 去左右(Regex.Match(PInfo, s + vbQuote + ": "".*?" + vbQuote + ",").ToString, s.Length + 4, 2)
         s = "lastlogoff"
-        最后登录时间 = UNIX时间恢复(只要数字(Regex.Match(PInfo, s + 引号 + ":.*?,").ToString))
+        最后登录时间 = UNIX时间恢复(只要数字(Regex.Match(PInfo, s + vbQuote + ":.*?,").ToString))
         创号时间 = #2000-01-01#
         s = "timecreated"
-        If 包含(PInfo, s) Then 创号时间 = UNIX时间恢复(只要数字(Regex.Match(PInfo, s + 引号 + ":.*?,").ToString))
+        If 包含(PInfo, s) Then 创号时间 = UNIX时间恢复(只要数字(Regex.Match(PInfo, s + vbQuote + ":.*?,").ToString))
         s = "loccountrycode"
-        国家 = 去左右(Regex.Match(PInfo, s + 引号 + ": "".*?" + 引号 + ",").ToString, s.Length + 4, 2)
+        国家 = 去左右(Regex.Match(PInfo, s + vbQuote + ": "".*?" + vbQuote + ",").ToString, s.Length + 4, 2)
         s = "personastate"
-        Select Case Val(只要数字(Regex.Match(PInfo, s + 引号 + ":.*?\n").ToString))
+        Select Case Val(只要数字(Regex.Match(PInfo, s + vbQuote + ":.*?\n").ToString))
             Case 0
                 在线状态 = "Offline"
             Case 1
@@ -75,7 +75,7 @@ Public Class Steam用户    '一个神奇的 Steam Web API
         End Select
         现在游戏ID = 0
         s = "gameid"
-        If 包含(PInfo, s) Then 现在游戏ID = Val(只要数字(Regex.Match(PInfo, s + 引号 + ": " + 引号 + ".*?" + 引号 + ",").ToString))
+        If 包含(PInfo, s) Then 现在游戏ID = Val(只要数字(Regex.Match(PInfo, s + vbQuote + ": " + vbQuote + ".*?" + vbQuote + ",").ToString))
         等级 = Val(只要数字(获得Http("https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=" + Key + "&steamid=" + ID64, "0")))
     End Sub
 
@@ -91,7 +91,7 @@ Public Class Steam用户    '一个神奇的 Steam Web API
                     s = "avatarfull"
             End Select
             Dim h As String = PInfo
-            h = Regex.Match(h, s + 引号 + ": "".*?" + 引号 + ",").ToString
+            h = Regex.Match(h, s + vbQuote + ": "".*?" + vbQuote + ",").ToString
             头像链接 = 去左右(h, s.Length + 4, 2)
         End Get
     End Property

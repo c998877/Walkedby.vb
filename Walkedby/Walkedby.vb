@@ -17,10 +17,30 @@ Imports System.Xml
 Module Walkedby '走過去的常用函数合集
     '統一：简体字，数字一律整数 Integer
 
-    Public Const 引号 As String = """"
+    Public Const vbQuote As String = """"
+
+    '把 nothing 字符串变成空字符串
+    Public Sub 空字符(ByRef a As String, Optional ByRef b As String = Nothing, Optional ByRef c As String = Nothing, Optional ByRef d As String = Nothing, Optional ByRef e As String = Nothing)
+        Dim h As String = ""
+        If IsNothing(a) Then a = h
+        If IsNothing(b) Then b = h
+        If IsNothing(c) Then c = h
+        If IsNothing(d) Then d = h
+        If IsNothing(e) Then e = h
+    End Sub
+
+    '把 nothing 字符串变成一个空格的字符串
+    Public Sub 非空字符(ByRef a As String, Optional ByRef b As String = Nothing, Optional ByRef c As String = Nothing, Optional ByRef d As String = Nothing, Optional ByRef e As String = Nothing)
+        Dim h As String = " "
+        If IsNothing(a) Then a = h
+        If IsNothing(b) Then b = h
+        If IsNothing(c) Then c = h
+        If IsNothing(d) Then d = h
+        If IsNothing(e) Then e = h
+    End Sub
 
     '左右，相当于 left right
-    Public Function 左(str As String, i As Object) As String
+    Public Function 左(str As String, i As Object) As String
         Dim s As Integer
         If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If s > 0 Then 左 = Left(str, s) Else 左 = ""
@@ -29,12 +49,6 @@ Module Walkedby '走過去的常用函数合集
         Dim s As Integer
         If i.GetType.Equals(String.Empty.GetType) Then s = i.length Else s = i
         If s > 0 Then 右 = Right(str, s) Else 右 = ""
-    End Function
-    Public Function 左右(str As String, Optional 左边 As Object = 0, Optional 右边 As Object = 0) As String
-        Dim l As Integer, r As Integer
-        If 左边.GetType.Equals(String.Empty.GetType) Then l = 左边.length Else l = 左边
-        If 右边.GetType.Equals(String.Empty.GetType) Then r = 右边.length Else r = 右边
-        If l + r >= str.Length Then 左右 = str Else 左右 = 左(str, l) + 右(str, r)
     End Function
 
     '去掉左边或右边
@@ -68,7 +82,7 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     'find 是否包含在 str 里，默认不检查大小写
-    Public Function 包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
+    Public Function 包含(str As String, find As String, Optional forceCase As Boolean = False) As Boolean
         包含 = False
         If str.Length < 1 OrElse find.Length < 1 OrElse str.Length < find.Length Then Exit Function
         If forceCase = False Then
@@ -198,15 +212,6 @@ Module Walkedby '走過去的常用函数合集
         Next
     End Function
 
-    '第一个词
-    Public Function 第一个词(str As String) As String
-        第一个词 = ""
-        str = Trim(str) + " "
-        If str.Length < 2 Then Exit Function
-        str = Regex.Match(str, "(\S).*? ").ToString
-        第一个词 = Trim(str)
-    End Function
-
     '回车规范化，统一到 vbcrlf
     Public Function 回车规范(str As String) As String
         回车规范 = str
@@ -240,7 +245,7 @@ Module Walkedby '走過去的常用函数合集
         文件名规范 = ""
         If path.Length < 1 Then Exit Function
         path = Replace(path, "/", "\")
-        文件名规范 = 去除(path, "*", "?", "<", ">", "|", 引号)
+        文件名规范 = 去除(path, "*", "?", "<", ">", "|", vbQuote)
         文件名规范 = Regex.Replace(文件名规范, "\\{2,}", "\")
         If 去斜杠 Then 文件名规范 = 去除(文件名规范, "\")
         If 去引号 Then 文件名规范 = 去除(文件名规范, ":")
@@ -294,7 +299,7 @@ Module Walkedby '走過去的常用函数合集
         If path.Length < 3 OrElse Len(a) < 1 Then Exit Sub
         Dim s As String = "cmd.exe /c " + LCase(左(path, 2))
         If 尾(path, "\") AndAlso path.Length > 3 Then path = 去右(path, "\")
-        s = s + " & cd " + 引号 + LCase(path) + 引号
+        s = s + " & cd " + vbQuote + LCase(path) + vbQuote
         If Len(a) < 1 Then Exit Sub Else s = s + " & " + a
         If Len(b) > 0 Then s = s + " & " + b
         If Len(c) > 0 Then s = s + " & " + c
@@ -310,7 +315,7 @@ Module Walkedby '走過去的常用函数合集
     '删除一个文件，超级强悍的火力
     Public Sub 删除文件(path As String)
         If path.Length < 4 Then Exit Sub
-        Dim s As String = 引号 + path + 引号
+        Dim s As String = vbQuote + path + vbQuote
         运行CMD("del /q /f " + s, " rmdir /s /q " + s)
     End Sub
 
