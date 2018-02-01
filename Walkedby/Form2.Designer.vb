@@ -22,28 +22,16 @@ Partial Class Form2
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
         Me.Button1 = New System.Windows.Forms.Button()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
-        'Timer1
-        '
-        Me.Timer1.Enabled = True
-        Me.Timer1.Interval = 1
-        '
-        'Timer2
-        '
-        Me.Timer2.Interval = 1
-        '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(23, 12)
+        Me.Button1.Location = New System.Drawing.Point(35, 31)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(121, 50)
+        Me.Button1.Size = New System.Drawing.Size(69, 108)
         Me.Button1.TabIndex = 1
         Me.Button1.Text = "Button1"
         Me.Button1.UseVisualStyleBackColor = True
@@ -51,17 +39,19 @@ Partial Class Form2
         'CheckBox1
         '
         Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(273, 37)
+        Me.CheckBox1.BackColor = System.Drawing.Color.DarkGray
+        Me.CheckBox1.Location = New System.Drawing.Point(242, 175)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(113, 25)
         Me.CheckBox1.TabIndex = 2
         Me.CheckBox1.Text = "CheckBox1"
-        Me.CheckBox1.UseVisualStyleBackColor = True
+        Me.CheckBox1.UseVisualStyleBackColor = False
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(386, 75)
+        Me.Label1.BackColor = System.Drawing.Color.Yellow
+        Me.Label1.Location = New System.Drawing.Point(140, 136)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(59, 21)
         Me.Label1.TabIndex = 3
@@ -71,12 +61,13 @@ Partial Class Form2
         '
         Me.AllowDrop = True
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
+        Me.BackColor = System.Drawing.SystemColors.ActiveCaption
         Me.ClientSize = New System.Drawing.Size(492, 299)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.CheckBox1)
         Me.Controls.Add(Me.Button1)
         Me.Font = New System.Drawing.Font("微软雅黑", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.KeyPreview = True
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "Form2"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "测试：拖动控件"
@@ -84,8 +75,6 @@ Partial Class Form2
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Timer1 As Timer
-    Friend WithEvents Timer2 As Timer
     Friend WithEvents Button1 As Button
     Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents Label1 As Label

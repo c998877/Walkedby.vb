@@ -46,4 +46,17 @@ Public Class Form2
         End If
     End Sub
 
+    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+
+    Private Sub Form2_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
+        If e.Button = MouseButtons.Right Then
+            拖动窗体(sender, e)
+        End If
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        End
+    End Sub
 End Class
