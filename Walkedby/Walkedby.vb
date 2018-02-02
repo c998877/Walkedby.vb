@@ -742,14 +742,15 @@ Module Walkedby '走過去的常用函数合集
         CmON = False
     End Sub
 
-    Public Sub 拖动窗体(winform As Form, e As MouseEventArgs)
+    Public Sub 拖动窗体(winform As Form, c As Control, e As MouseEventArgs)
         CmForm = winform
+        Cm = c
         If CmForm.WindowState = FormWindowState.Maximized Then CmForm.WindowState = FormWindowState.Normal
         CmON = True
-        CmX = e.X
-        CmY = e.Y
-        AddHandler CmForm.MouseMove, AddressOf 正在拖动窗体
-        AddHandler CmForm.MouseUp, AddressOf 结束拖动窗体
+        CmX = Cursor.Position.X - 窗口边框X(CmForm) - CmForm.Left
+        CmY = Cursor.Position.Y - 窗口边框Y(CmForm) - CmForm.Top
+        AddHandler Cm.MouseMove, AddressOf 正在拖动窗体
+        AddHandler Cm.MouseUp, AddressOf 结束拖动控件
     End Sub
 
     Private Sub 正在拖动窗体()
@@ -760,10 +761,6 @@ Module Walkedby '走過去的常用函数合集
         i = Cursor.Position.Y - CmY - 窗口边框Y(CmForm)
         CmForm.Top = i
         Thread.Sleep(1)
-    End Sub
-
-    Private Sub 结束拖动窗体()
-        CmON = False
     End Sub
 
     '获得这个窗口的边框的宽度
