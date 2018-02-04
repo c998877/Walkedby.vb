@@ -15,7 +15,6 @@ Imports Microsoft.Win32
 Imports System.Xml
 
 Module Walkedby '走過去的常用函数合集
-    '統一：简体字，数字一律整数 Integer
 
     Public Const vbQuote As String = """"
 
@@ -383,6 +382,7 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
+        path = Replace(path, "/", "\")
         If 文件存在(路径(path), False) = False Then Directory.CreateDirectory(路径(path))
         If Not 文件可写(path) Then Exit Sub
         File.WriteAllText(path, str, Text.Encoding.UTF8)
@@ -390,6 +390,7 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件的末尾
     Public Sub 附写(path As String, str As String, Optional AddEnter As Boolean = True)
+        path = Replace(path, "/", "\")
         If Not 文件可写(path) Then Exit Sub
         If AddEnter Then str = vbCrLf + str
         File.AppendAllText(path, str, Text.Encoding.UTF8)
@@ -405,6 +406,7 @@ Module Walkedby '走過去的常用函数合集
 
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
+        path = Replace(path, "/", "\")
         读 = 默认
         If Not 文件存在(path) Then Exit Function
         Try
@@ -557,12 +559,18 @@ Module Walkedby '走過去的常用函数合集
         Next
     End Function
 
+    '补全链接的开头
+    Public Function 补全链接(str As String, Optional head As String = "https")
+        补全链接 = str
+        head = 去除(head, ":", "/")
+        Dim h As String = 左(str, 9)
+        If Not 正则包含(h, "(ht|f)tp[s]*:/+") Then 补全链接 = head + "://" + str
+        If Not 尾(补全链接, "/") Then 补全链接 += "/"
+    End Function
+
     '打开网址到浏览器
     Public Sub 浏览器打开(str As String)
-        If Not (头(str, "https://") OrElse 头(str, "http://") OrElse 头(str, "file://")) Then
-            str = "http://" + str
-        End If
-        Process.Start(str)
+        Process.Start(补全链接(str))
     End Sub
 
     '便捷的控制台输出，多个选项自动分开
@@ -602,15 +610,15 @@ Module Walkedby '走過去的常用函数合集
     '简易的 HTTP GET ，可以很快获得 HTML 内容
     Public Function 获得Http(url As String, Optional df As String = "ERROR") As String
         获得Http = df
-        If url.Length < 3 Then Exit Function
-        If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
+        url = 补全链接(url)
+        If url.Length < 8 Then Exit Function
         Try
             Dim hq As HttpWebRequest = WebRequest.Create(url)
             hq.Method = "GET"
             Dim sr As StreamReader = New StreamReader(hq.GetResponse.GetResponseStream)
             获得Http = sr.ReadToEnd
             sr.Close()
-        Catch
+        Catch ex As Exception
             获得Http = df
         End Try
     End Function
@@ -618,9 +626,9 @@ Module Walkedby '走過去的常用函数合集
     '读取一张在线图片为 Image
     Public Function 在线图片(url As String) As Image
         在线图片 = Nothing
+        url = 补全链接(url)
+        If url.Length < 8 Then Exit Function
         Try
-            If url.Length < 8 Then Exit Function
-            If Regex.IsMatch(左(url, 8), "htt(p|ps)://") = False Then url = "https://" + url
             Dim hq As HttpWebRequest = WebRequest.Create(url)
             hq.Method = "GET"
             在线图片 = Image.FromStream(hq.GetResponse.GetResponseStream)
@@ -640,7 +648,7 @@ Module Walkedby '走過去的常用函数合集
                 .Credentials = New NetworkCredential(你的邮箱, 密码)
                 .Send(你的邮箱, 收信人, 标题, 正文)
             End With
-        Catch ex As Exception
+        Catch
         End Try
     End Sub
 
@@ -708,7 +716,7 @@ Module Walkedby '走過去的常用函数合集
     Public Function 读设置(ID As String, Optional def As String = "") As String
         Dim r As XmlNode = 设置.SelectSingleNode("root"), x As XmlNode
         x = r.SelectSingleNode(ID)
-        If IsNothing(x) = False Then
+        If Not IsNothing(x) Then
             读设置 = x.InnerText
         Else
             读设置 = def
@@ -716,89 +724,12 @@ Module Walkedby '走過去的常用函数合集
         End If
     End Function
 
-    '用鼠标移动一个控件或窗体
-    Private CmX As Integer, CmY As Integer, CmForm As Form, Cm As Control, CmON As Boolean
-
-    Public Sub 拖动控件(winform As Form, c As Control, e As MouseEventArgs)
-        CmForm = winform
-        Cm = c
-        CmON = True
-        CmX = e.X
-        CmY = e.Y
-        AddHandler Cm.MouseMove, AddressOf 正在拖动控件
-        AddHandler Cm.MouseUp, AddressOf 结束拖动控件
-    End Sub
-
-    Private Sub 正在拖动控件()
-        If Not CmON Then Exit Sub
-        Dim i As Integer, hx As Integer = 窗口边框X(CmForm), hy As Integer = 窗口边框Y(CmForm)
-        i = Cursor.Position.X - CmForm.Left() - CmX - hx
-        If i >= 0 AndAlso i < CmForm.Width - Cm.Width - hx Then Cm.Left = i
-        i = Cursor.Position.Y - CmForm.Top - CmY - hy
-        If i >= 0 AndAlso i < CmForm.Height - Cm.Height - hy Then Cm.Top = i
-    End Sub
-
-    Private Sub 结束拖动控件()
-        CmON = False
-    End Sub
-
-    Public Sub 拖动窗体(winform As Form, c As Control, e As MouseEventArgs)
-        CmForm = winform
-        Cm = c
-        If CmForm.WindowState = FormWindowState.Maximized Then CmForm.WindowState = FormWindowState.Normal
-        CmON = True
-        CmX = Cursor.Position.X - 窗口边框X(CmForm) - CmForm.Left
-        CmY = Cursor.Position.Y - 窗口边框Y(CmForm) - CmForm.Top
-        AddHandler Cm.MouseMove, AddressOf 正在拖动窗体
-        AddHandler Cm.MouseUp, AddressOf 结束拖动控件
-    End Sub
-
-    Private Sub 正在拖动窗体()
-        If Not CmON Then Exit Sub
-        Dim i As Integer
-        i = Cursor.Position.X - CmX - 窗口边框X(CmForm)
-        CmForm.Left = i
-        i = Cursor.Position.Y - CmY - 窗口边框Y(CmForm)
-        CmForm.Top = i
-        Thread.Sleep(1)
-    End Sub
-
-    '获得这个窗口的边框的宽度
-    Public Function 窗口边框X(winform As Form) As Integer
-        窗口边框X = 0
-        Select Case CmForm.FormBorderStyle
-            Case FormBorderStyle.Fixed3D
-                窗口边框X = 10
-            Case FormBorderStyle.FixedSingle
-                窗口边框X = 10
-            Case FormBorderStyle.Sizable
-                窗口边框X = 10
-            Case FormBorderStyle.FixedDialog
-                窗口边框X = 8
-            Case FormBorderStyle.FixedToolWindow
-                窗口边框X = 8
-            Case FormBorderStyle.SizableToolWindow
-                窗口边框X = 8
-        End Select
+    Public Function 读设置N(id As String, Optional def As Double = 0) As Double
+        读设置N = Val(读设置(id, def.ToString))
     End Function
 
-    '获得这个窗口的边框的高度
-    Public Function 窗口边框Y(winform As Form) As Integer
-        窗口边框Y = 0
-        Select Case CmForm.FormBorderStyle
-            Case FormBorderStyle.Fixed3D
-                窗口边框Y = 32
-            Case FormBorderStyle.FixedSingle
-                窗口边框Y = 30
-            Case FormBorderStyle.Sizable
-                窗口边框Y = 30
-            Case FormBorderStyle.FixedDialog
-                窗口边框Y = 30
-            Case FormBorderStyle.FixedToolWindow
-                窗口边框Y = 27
-            Case FormBorderStyle.SizableToolWindow
-                窗口边框Y = 27
-        End Select
+    Public Function 读设置B(id As String, Optional def As Boolean = True) As Boolean
+        读设置B = (读设置(id, def.ToString) = "True")
     End Function
 
 End Module

@@ -129,6 +129,7 @@
     </Compile>
     <Compile Include="SteamWebUser.vb" />
     <Compile Include="Walkedby.vb" />
+    <Compile Include="Walkedby_ControlMoving.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
