@@ -18,6 +18,47 @@ Module Walkedby '走過去的常用函数合集
 
     Public Const vbQuote As String = """"
 
+    '屏幕的宽高
+    Public ReadOnly Property 屏幕宽 As Integer
+        Get
+            Return My.Computer.Screen.Bounds.Width
+        End Get
+    End Property
+    Public ReadOnly Property 屏幕高 As Integer
+        Get
+            Return My.Computer.Screen.Bounds.Height
+        End Get
+    End Property
+    Public ReadOnly Property 屏幕尺寸 As Size
+        Get
+            Return New Size With {.Width = 屏幕宽, .Height = 屏幕高}
+        End Get
+    End Property
+
+    '获得屏幕的截图
+    Public Function 截屏() As Bitmap
+        Dim b As Bitmap = New Bitmap(屏幕宽, 屏幕高)
+        Dim g As Graphics = Graphics.FromImage(b)
+        g.CopyFromScreen(0, 0, 0, 0, 屏幕尺寸, CopyPixelOperation.SourceCopy)
+        截屏 = b
+    End Function
+
+    '压缩保存 JPG 图片
+    Public Sub 保存JPG(i As Bitmap, path As String, Optional quality As Integer = 90)
+        If IsNothing(i) Then Exit Sub
+        If path.Length < 5 Then Exit Sub
+        If Not 文件存在(路径(path), True) Then Directory.CreateDirectory(路径(path))
+        path = 文件名规范(path)
+        Dim h As New Imaging.EncoderParameters
+        h.Param(0) = New Imaging.EncoderParameter(Imaging.Encoder.Quality, quality)
+        Dim m() As Imaging.ImageCodecInfo = Imaging.ImageCodecInfo.GetImageDecoders
+        Dim s As Imaging.ImageCodecInfo
+        For Each s In m
+            If s.MimeType.Equals("image/jpeg") Then Exit For
+        Next
+        If Not IsNothing(s) Then i.Save(path, s, h)
+    End Sub
+
     '把 nothing 字符串变成空字符串
     Public Sub 空字符(ByRef a As String, Optional ByRef b As String = Nothing, Optional ByRef c As String = Nothing, Optional ByRef d As String = Nothing, Optional ByRef e As String = Nothing)
         Dim h As String = ""
@@ -240,14 +281,13 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '去掉不应该有的符号
-    Public Function 文件名规范(path As String, Optional 去斜杠 As Boolean = False, Optional 去引号 As Boolean = False) As String
+    Public Function 文件名规范(path As String) As String
         文件名规范 = ""
-        If path.Length < 1 Then Exit Function
+        If path.Length < 3 Then Exit Function
         path = Replace(path, "/", "\")
-        文件名规范 = 去除(path, "*", "?", "<", ">", "|", vbQuote)
-        文件名规范 = Regex.Replace(文件名规范, "\\{2,}", "\")
-        If 去斜杠 Then 文件名规范 = 去除(文件名规范, "\")
-        If 去引号 Then 文件名规范 = 去除(文件名规范, ":")
+        Dim h As String = 文件名(path)
+        path = 去右(path, h)
+        文件名规范 = path + 去除(h, "*", "?", "<", ">", "|", vbQuote, "\", ":")
     End Function
 
     '从 path 中获得文件或者最后一层文件夹的名字

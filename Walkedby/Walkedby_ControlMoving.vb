@@ -14,8 +14,9 @@ Imports System.Security.Permissions
 Imports Microsoft.Win32
 Imports System.Xml
 
-Module Walkedby_ControlMoving '用鼠标移动一个控件或窗体
+Module Walkedby_ControlMoving
 
+    '用鼠标移动一个控件或窗体
     Private CmX As Integer, CmY As Integer, CmForm As Form, Cm As Control, CmON As Boolean
 
     Public Sub 拖动控件(winform As Form, c As Control, e As MouseEventArgs)
