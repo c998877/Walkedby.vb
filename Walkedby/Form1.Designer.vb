@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class Form1
     Inherits System.Windows.Forms.Form
 
-    'Form 覆寫 Dispose 以清除元件清單。
-    <System.Diagnostics.DebuggerNonUserCode()>
+    'Form 重写 Dispose，以清理组件列表。
+    <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -14,111 +14,134 @@ Partial Class Form1
         End Try
     End Sub
 
-    '為 Windows Form 設計工具的必要項
+    'Windows 窗体设计器所必需的
     Private components As System.ComponentModel.IContainer
 
-    '注意: 以下為 Windows Form 設計工具所需的程序
-    '可以使用 Windows Form 設計工具進行修改。
-    '請勿使用程式碼編輯器進行修改。
-    <System.Diagnostics.DebuggerStepThrough()>
+    '注意: 以下过程是 Windows 窗体设计器所必需的
+    '可以使用 Windows 窗体设计器修改它。  
+    '不要使用代码编辑器修改它。
+    <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.WB = New System.Windows.Forms.WebBrowser()
-        Me.LanguageList = New System.Windows.Forms.ListBox()
-        Me.WorkList = New System.Windows.Forms.ListBox()
-        Me.PB = New System.Windows.Forms.ProgressBar()
-        Me.ButX = New System.Windows.Forms.Button()
-        Me.RR = New System.Windows.Forms.RichTextBox()
+        Me.Wbank = New System.Windows.Forms.WebBrowser()
+        Me.Always = New System.Windows.Forms.Timer(Me.components)
+        Me.BankRefresh = New System.Windows.Forms.Timer(Me.components)
+        Me.LabBank = New System.Windows.Forms.Label()
+        Me.AutoR = New System.Windows.Forms.Timer(Me.components)
+        Me.Wphone = New System.Windows.Forms.WebBrowser()
+        Me.LabPhone = New System.Windows.Forms.Label()
+        Me.PhoneRefresh = New System.Windows.Forms.Timer(Me.components)
+        Me.ButBack = New System.Windows.Forms.Button()
+        Me.LabHoliday = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
-        'Timer1
+        'Wbank
         '
-        Me.Timer1.Interval = 500
-        Me.Timer1.Tag = "下个addon"
+        Me.Wbank.Location = New System.Drawing.Point(12, 84)
+        Me.Wbank.MinimumSize = New System.Drawing.Size(20, 20)
+        Me.Wbank.Name = "Wbank"
+        Me.Wbank.ScriptErrorsSuppressed = True
+        Me.Wbank.Size = New System.Drawing.Size(497, 177)
+        Me.Wbank.TabIndex = 0
+        Me.Wbank.Url = New System.Uri("", System.UriKind.Relative)
         '
-        'WB
+        'Always
         '
-        Me.WB.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.WB.Location = New System.Drawing.Point(0, 0)
-        Me.WB.MinimumSize = New System.Drawing.Size(20, 20)
-        Me.WB.Name = "WB"
-        Me.WB.ScriptErrorsSuppressed = True
-        Me.WB.Size = New System.Drawing.Size(858, 533)
-        Me.WB.TabIndex = 0
-        Me.WB.Url = New System.Uri("", System.UriKind.Relative)
+        Me.Always.Enabled = True
         '
-        'LanguageList
+        'BankRefresh
         '
-        Me.LanguageList.FormattingEnabled = True
-        Me.LanguageList.ItemHeight = 21
-        Me.LanguageList.Items.AddRange(New Object() {"0"})
-        Me.LanguageList.Location = New System.Drawing.Point(26, 12)
-        Me.LanguageList.Name = "LanguageList"
-        Me.LanguageList.Size = New System.Drawing.Size(110, 214)
-        Me.LanguageList.TabIndex = 1
+        Me.BankRefresh.Interval = 800
+        Me.BankRefresh.Tag = "登录银行"
         '
-        'WorkList
+        'LabBank
         '
-        Me.WorkList.FormattingEnabled = True
-        Me.WorkList.ItemHeight = 21
-        Me.WorkList.Items.AddRange(New Object() {"919345462", "917724774", "912967700", "912365648", "903021980", "898838725", "675575381", "898827150", "675573801", "898810976", "675570485", "893885489", "886651153", "876656690", "872597421", "872441048", "871610058", "868948353", "866172091", "862311862", "861513118", "860656348", "859456633", "858859243", "853373042", "846802547", "839981529", "838575689", "834368988", "825541626", "825481096", "802336368", "798923281", "797377960", "788524872", "785700755", "775263905" & Global.Microsoft.VisualBasic.ChrW(9) & Global.Microsoft.VisualBasic.ChrW(9)})
-        Me.WorkList.Location = New System.Drawing.Point(157, 12)
-        Me.WorkList.Name = "WorkList"
-        Me.WorkList.Size = New System.Drawing.Size(153, 109)
-        Me.WorkList.TabIndex = 2
+        Me.LabBank.AutoSize = True
+        Me.LabBank.Location = New System.Drawing.Point(12, 9)
+        Me.LabBank.Name = "LabBank"
+        Me.LabBank.Size = New System.Drawing.Size(129, 20)
+        Me.LabBank.TabIndex = 3
+        Me.LabBank.Text = "建设银行卡余额："
         '
-        'PB
+        'AutoR
         '
-        Me.PB.Location = New System.Drawing.Point(320, 11)
-        Me.PB.Name = "PB"
-        Me.PB.Size = New System.Drawing.Size(508, 23)
-        Me.PB.TabIndex = 3
+        Me.AutoR.Enabled = True
+        Me.AutoR.Interval = 30000
         '
-        'ButX
+        'Wphone
         '
-        Me.ButX.Location = New System.Drawing.Point(325, 40)
-        Me.ButX.Name = "ButX"
-        Me.ButX.Size = New System.Drawing.Size(118, 49)
-        Me.ButX.TabIndex = 4
-        Me.ButX.Text = "暂停"
-        Me.ButX.UseVisualStyleBackColor = True
+        Me.Wphone.Location = New System.Drawing.Point(16, 267)
+        Me.Wphone.MinimumSize = New System.Drawing.Size(20, 20)
+        Me.Wphone.Name = "Wphone"
+        Me.Wphone.ScriptErrorsSuppressed = True
+        Me.Wphone.Size = New System.Drawing.Size(493, 195)
+        Me.Wphone.TabIndex = 4
+        Me.Wphone.Url = New System.Uri("", System.UriKind.Relative)
         '
-        'RR
+        'LabPhone
         '
-        Me.RR.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.RR.Font = New System.Drawing.Font("微软雅黑", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RR.Location = New System.Drawing.Point(12, 153)
-        Me.RR.Name = "RR"
-        Me.RR.Size = New System.Drawing.Size(480, 368)
-        Me.RR.TabIndex = 5
-        Me.RR.Text = "dsa"
+        Me.LabPhone.AutoSize = True
+        Me.LabPhone.Location = New System.Drawing.Point(12, 29)
+        Me.LabPhone.Name = "LabPhone"
+        Me.LabPhone.Size = New System.Drawing.Size(84, 20)
+        Me.LabPhone.TabIndex = 5
+        Me.LabPhone.Text = "话费余额："
+        '
+        'PhoneRefresh
+        '
+        Me.PhoneRefresh.Interval = 800
+        Me.PhoneRefresh.Tag = "登录"
+        '
+        'ButBack
+        '
+        Me.ButBack.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ButBack.Location = New System.Drawing.Point(357, 9)
+        Me.ButBack.Name = "ButBack"
+        Me.ButBack.Size = New System.Drawing.Size(145, 29)
+        Me.ButBack.TabIndex = 6
+        Me.ButBack.Text = "显示浏览器本体"
+        Me.ButBack.UseVisualStyleBackColor = True
+        '
+        'LabHoliday
+        '
+        Me.LabHoliday.AutoSize = True
+        Me.LabHoliday.Location = New System.Drawing.Point(12, 49)
+        Me.LabHoliday.Name = "LabHoliday"
+        Me.LabHoliday.Size = New System.Drawing.Size(114, 20)
+        Me.LabHoliday.TabIndex = 7
+        Me.LabHoliday.Text = "寒假已经过了："
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
-        Me.ClientSize = New System.Drawing.Size(858, 533)
-        Me.Controls.Add(Me.RR)
-        Me.Controls.Add(Me.ButX)
-        Me.Controls.Add(Me.PB)
-        Me.Controls.Add(Me.WorkList)
-        Me.Controls.Add(Me.LanguageList)
-        Me.Controls.Add(Me.WB)
-        Me.Font = New System.Drawing.Font("微软雅黑", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ClientSize = New System.Drawing.Size(514, 473)
+        Me.Controls.Add(Me.LabHoliday)
+        Me.Controls.Add(Me.ButBack)
+        Me.Controls.Add(Me.LabPhone)
+        Me.Controls.Add(Me.Wphone)
+        Me.Controls.Add(Me.LabBank)
+        Me.Controls.Add(Me.Wbank)
+        Me.Font = New System.Drawing.Font("微软雅黑", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
         Me.KeyPreview = True
-        Me.Margin = New System.Windows.Forms.Padding(5)
+        Me.MaximizeBox = False
         Me.Name = "Form1"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Workshop 简介批量改进"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.Text = "查余额"
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Timer1 As Timer
-    Friend WithEvents WB As WebBrowser
-    Friend WithEvents LanguageList As ListBox
-    Friend WithEvents WorkList As ListBox
-    Friend WithEvents PB As ProgressBar
-    Friend WithEvents ButX As Button
-    Friend WithEvents RR As RichTextBox
+
+    Friend WithEvents Wbank As WebBrowser
+    Friend WithEvents Always As Timer
+    Friend WithEvents BankRefresh As Timer
+    Friend WithEvents LabBank As Label
+    Friend WithEvents AutoR As Timer
+    Friend WithEvents Wphone As WebBrowser
+    Friend WithEvents LabPhone As Label
+    Friend WithEvents PhoneRefresh As Timer
+    Friend WithEvents ButBack As Button
+    Friend WithEvents LabHoliday As Label
 End Class

@@ -52,7 +52,7 @@ Module Walkedby '走過去的常用函数合集
         Dim h As New Imaging.EncoderParameters
         h.Param(0) = New Imaging.EncoderParameter(Imaging.Encoder.Quality, quality)
         Dim m() As Imaging.ImageCodecInfo = Imaging.ImageCodecInfo.GetImageDecoders
-        Dim s As Imaging.ImageCodecInfo
+        Dim s As Imaging.ImageCodecInfo = Nothing
         For Each s In m
             If s.MimeType.Equals("image/jpeg") Then Exit For
         Next
@@ -208,6 +208,15 @@ Module Walkedby '走過去的常用函数合集
             x = x & s
         Next
         随机KEY = UCase(去右(x, s.Length))
+    End Function
+
+    '把数字格式化为指定小数位数的字符串
+    Public Function 标准数字(i As Double, Optional 小数 As Integer = 2) As String
+        If 小数 < 0 Then 小数 = 0
+        If 小数 > 15 Then 小数 = 15
+        Dim h As String = Trim(Str(i))
+        Dim r As String = 左(只要数字(Regex.Match(h, "\.[0-9].*$").ToString + "000000000000000000000000"), 小数)
+        标准数字 = Regex.Match(h, "[0-9].*\.").ToString + r
     End Function
 
     '从 str 中去除指定的文字
@@ -636,11 +645,13 @@ Module Walkedby '走過去的常用函数合集
     End Sub
 
     '验证一个 WebBrowser 是否加载完成
-    Public Function 完成Web(wb As WebBrowser, Optional bodylen As Integer = 3000) As Boolean
+    Public Function 完成Web(wb As WebBrowser, Optional bodylen As Integer = 3000, Optional fully As Boolean = False) As Boolean
         完成Web = False
         Try
             If wb.Document = Nothing Then Exit Function
-            If wb.ReadyState < 3 Then Exit Function
+            Dim i As Integer = 3
+            If fully Then i = 4
+            If wb.ReadyState < i Then Exit Function
             If wb.Document.Body.InnerHtml.Length < bodylen Then Exit Function
         Catch
         End Try

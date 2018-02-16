@@ -12,11 +12,11 @@ Namespace My
     Partial Friend Class MyApplication
 
         Private Sub MyApplication_Startup(sender As Object, e As StartupEventArgs) Handles Me.Startup
-            读取设置()
+            '读取设置()
         End Sub
 
         Private Sub MyApplication_Shutdown(sender As Object, e As EventArgs) Handles Me.Shutdown
-            保存设置()
+            '保存设置()
         End Sub
 
     End Class

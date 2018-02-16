@@ -6,98 +6,134 @@ Imports Microsoft
 Imports System.Text
 Imports System.ComponentModel
 Imports System.Web
-Imports System.Net
 Imports System.Threading
 Imports System.Threading.Tasks
-Imports System.Media
-Imports System.Media.SystemSounds
-Imports System.Object
+Imports System.Net
+Imports System.Net.Mail
+Imports System.Security.Permissions
+Imports Microsoft.Win32
+Imports System.Xml
 
 Public Class Form1
-    '这个窗体是用来批量改workshop的，自己写的小功能，不发布
-
-    Dim lik As String = "https://steamcommunity.com/sharedfiles/itemedittext/?id="
-    Dim nowID As String
-    Dim nowLangu As String
-
-    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
-        PB.Value = PB.Maximum - WorkList.Items.Count
-        If LanguageList.Items.Count > 0 Then nowLangu = 只要数字(LanguageList.Items.Item(0).ToString)
-        If WorkList.Items.Count > 0 Then nowID = WorkList.Items.Item(0)
-        Text = Timer1.Tag + "，当前素材ID：" + nowID + "，还剩：" + WorkList.Items.Count.ToString
-        If WorkList.Items.Count < 1 Then
-            Timer1.Tag = "已经完成"
-            Exit Sub
-        End If
-        If 完成Web(WB, 3000) = False Then Exit Sub
-        Select Case LCase(Timer1.Tag)
-            Case "寻找语言"
-                For Each h As HtmlElement In WB.Document.GetElementsByTagName("option")
-                    Dim s As String = h.OuterHtml
-                    If 包含(s, ")") Then
-                        s = 正则提取(s, "value=", ">", False)
-                        LanguageList.Items.Add(只要数字(s))
-                    End If
-                Next
-                列表去重(LanguageList.Items)
-                nowLangu = 只要数字(LanguageList.Items.Item(0).ToString)
-                Timer1.Tag = "修改"
-            Case "修改"
-                Dim h As HtmlElement = WB.Document.GetElementById("description")
-                Dim s As String = h.InnerText
-                s = 正则去除(s, "\[url.*?(099466387|edy)/myworkshopfiles([\s\S]*?)url]")
-                s = 正则去除(s, "\[img.*?top/workshop.jpg.*?\]")
-                s = 正则去除(s, "\[img.*?ooo.0o0.ooo.*?\]")
-                s = 去多余回车(s)
-                s = s + vbCrLf + "[url=https://steamcommunity.com/profiles/76561198099466387/myworkshopfiles/][img]https://gordonw.top/workshop.jpg[/img][/url]"
-                h.InnerText = s
-                RR.Text = s
-                RR.SelectionStart = RR.TextLength
-                RR.ScrollToCaret()
-                WB.Document.InvokeScript("ValidateForm")
-                Timer1.Tag = "等待修改完成"
-            Case "等待修改完成"
-                If 包含(WB.Document.Body.InnerHtml, "workshop_paymentinfo_validation_error") = False Then Exit Sub
-                LanguageList.Items.RemoveAt(0)
-                If LanguageList.Items.Count > 0 Then
-                    Timer1.Tag = "下个语言"
-                Else
-                    WorkList.Items.RemoveAt(0)
-                    Timer1.Tag = "下个addon"
-                End If
-            Case "下个语言"
-                nowLangu = 只要数字(LanguageList.Items.Item(0).ToString)
-                WB.Navigate(lik + nowID + "&language=" + nowLangu)
-                Timer1.Tag = "等待加载完成再修改"
-            Case "等待加载完成再修改"
-                Timer1.Tag = "修改"
-            Case "下个addon"
-                WB.Navigate(lik + nowID + "&language=0")
-                Timer1.Tag = "等待加载完成再选择语言"
-                控制台("Done:", PB.Value)
-            Case "等待加载完成再选择语言"
-                If 包含(WB.Url.ToString, "itemedittext") = False Or 包含(WB.DocumentText, "returnLink") Then
-                    WorkList.Items.RemoveAt(0)
-                    Timer1.Tag = "下个addon"
-                    Exit Sub
-                End If
-                Timer1.Tag = "寻找语言"
-        End Select
-    End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        列表去重(WorkList.Items)
-        控制台(列表转文字(WorkList.Items))
-        PB.Maximum = WorkList.Items.Count
+        Wphone.Focus()
+        Wbank.Focus()
+        AutoR_Tick(sender, e)
+        Height = 118
+        Width = 389
     End Sub
 
-    Private Sub ButX_Click(sender As Object, e As EventArgs) Handles ButX.Click
-        Timer1.Enabled = Not Timer1.Enabled
-        If Timer1.Enabled Then
-            ButX.Text = "暂停"
-        Else
-            ButX.Text = "继续"
-        End If
+    Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        BankRefresh.Enabled = False
+        PhoneRefresh.Enabled = False
+        Wphone.Dispose()
+        Wbank.Dispose()
+    End Sub
+
+    Private Sub AutoR_Tick(sender As Object, e As EventArgs) Handles AutoR.Tick
+        BankRefresh.Tag = "登录银行"
+        Wphone.Navigate("http://10040.snail.com/pc/login.html")
+        PhoneRefresh.Tag = "登录"
+        Wbank.Navigate("https://ibsbjstar.ccb.com.cn/CCBIS/V6/STY1/CN/login.jsp")
+        BankRefresh.Enabled = True
+        PhoneRefresh.Enabled = True
+        Wphone.Focus()
+        Wbank.Focus()
+        Dim 结束时间 As Long = UNIX时间(#2018-3-3 00:00:00#)
+        Dim 开始时间 As Long = UNIX时间(#2018-1-26 13:00:00#)
+        Dim 现在 As Long = UNIX时间(Now)
+        LabHoliday.Text = "寒假已经过了：" + 标准数字((现在 - 开始时间) / (结束时间 - 开始时间) * 100, 2) + "%"
+    End Sub
+
+    Private Sub BankRefresh_Tick(sender As Object, e As EventArgs) Handles BankRefresh.Tick
+        BankRefresh.Enabled = False
+        Dim JSbank As String = "建设银行卡余额："
+        Select Case BankRefresh.Tag
+            Case "登录银行"
+                LabBank.Text = JSbank + "读取中"
+                If Not 完成Web(Wbank, 8000, True) Then Exit Select
+                If Wbank.Document.Window.Frames.Count < 1 Then Exit Select
+                Dim i As HtmlDocument = Wbank.Document.Window.Frames.Item(0).Document
+                If IsNothing(i.GetElementById("USERID")) Then Exit Select
+                If IsNothing(i.GetElementById("LOGPASS")) Then Exit Select
+				Dim sid As string = ""	'身份证号
+                i.GetElementById("USERID").InnerText = sid 
+                i.GetElementById("LOGPASS").InnerText = ""   '密码
+                i.GetElementById("loginButton").InvokeMember("click")
+                BankRefresh.Tag = "读取银行key"
+            Case "读取银行key"
+                LabBank.Text = JSbank + "读取中"
+                If Not 完成Web(Wbank, 8000, True) Then Exit Select
+                If Wbank.Document.Window.Frames.Count < 1 Then Exit Select
+                Dim h As String = Wbank.Document.All.Item(1).InnerHtml
+                h = 正则提取(h, """SKEY"": """, """,")
+                Wbank.Navigate("https://ibsbjstar.ccb.com.cn/CCBIS/B2CMainPlat_08?SERVLET_NAME=B2CMainPlat_08&CCB_IBSVersion=V6&PT_STYLE=1&isAjaxRequest=true&TXCODE=N31002&SKEY=" + h + "&USERID="  + sid +"&BRANCHID=330000000&ACC_NO=6236681490001430712&SEND_USERID=")
+                BankRefresh.Tag = "读取银行余额"
+            Case "读取银行余额"
+                LabBank.Text = JSbank + "读取中"
+                Dim h As String = Wbank.DocumentText
+                If h.Length < 100 Then
+                    LabBank.Text = JSbank + "读取失败"
+                    Exit Select
+                End If
+                h = Regex.Match(h, "yu_e.*?$").ToString
+                h = 去除(h, "yu_e", ":", vbQuote, "}")
+                h = 正则去除(h, "<.*?>")
+                LabBank.Text = JSbank + h
+                Exit Sub
+        End Select
+        BankRefresh.Enabled = True
+    End Sub
+
+    Private Sub PhoneRefresh_Tick(sender As Object, e As EventArgs) Handles PhoneRefresh.Tick
+        PhoneRefresh.Enabled = False
+        Dim Sn As String = "话费余额："
+        Select Case PhoneRefresh.Tag
+            Case "登录"
+                LabPhone.Text = Sn + "读取中"
+                Wphone.Focus()
+                If Not 完成Web(Wphone,, True) Then Exit Select
+                Dim i As HtmlDocument = Wphone.Document
+                If IsNothing(i.GetElementById("pwd")) Then Exit Select
+                i.GetElementById("account").Focus()
+                i.GetElementById("account").InnerText = ""
+                i.GetElementById("pwd").Focus()
+                i.GetElementById("pwd").SetAttribute("value", "" & vbCrLf)
+                Wphone.Focus()
+                i.GetElementById("login").InvokeMember("click")
+                Wphone.Focus()
+                i.GetElementById("login").InvokeMember("click")
+                Wphone.Focus()
+                i.GetElementById("login").InvokeMember("click")
+                Wphone.Focus()
+                i.GetElementById("login").InvokeMember("click")
+                PhoneRefresh.Tag = "等待"
+            Case "等待"
+                LabPhone.Text = Sn + "读取中"
+                PhoneRefresh.Tag = "查余额"
+            Case "查余额"
+                If Not 完成Web(Wphone,, True) Then Exit Select
+                Dim s As String = Wphone.Document.Body.InnerText
+                If Not 包含(s, "兔兔币") Then Exit Select
+                s = 正则提取(s, "兔兔币", "元")
+                s = 去除(s, vbCr, vbLf)
+                If s.Length > 0 Then
+                    LabPhone.Text = Sn + s
+                Else
+                    LabPhone.Text = Sn + "读取失败"
+                End If
+                Exit Sub
+        End Select
+        PhoneRefresh.Enabled = True
+    End Sub
+
+    Private Sub ButBack_Click(sender As Object, e As EventArgs) Handles ButBack.Click
+        If Height < 200 Then Height = 515 Else Height = 118
+        If Width < 400 Then Width = 540 Else Width = 389
+    End Sub
+
+    Private Sub Always_Tick(sender As Object, e As EventArgs) Handles Always.Tick
     End Sub
 
 End Class
