@@ -59,6 +59,24 @@ Module Walkedby '走過去的常用函数合集
         If Not IsNothing(s) Then i.Save(path, s, h)
     End Sub
 
+    '把 bitmap 变成 base64 字符串
+    Public Function 图片转base64(i As Bitmap, Optional HeadStr As Boolean = False, Optional quality As Integer = 90) As String
+        图片转base64 = ""
+        If IsNothing(i) Then Exit Function
+        Dim h As New Imaging.EncoderParameters
+        h.Param(0) = New Imaging.EncoderParameter(Imaging.Encoder.Quality, quality)
+        Dim m() As Imaging.ImageCodecInfo = Imaging.ImageCodecInfo.GetImageDecoders
+        Dim s As Imaging.ImageCodecInfo = Nothing
+        For Each s In m
+            If s.MimeType.Equals("image/jpeg") Then Exit For
+        Next
+        Dim ms As New MemoryStream
+        If Not IsNothing(s) Then i.Save(ms, s, h)
+        图片转base64 = Convert.ToBase64String(ms.ToArray)
+        If HeadStr Then 图片转base64 = "data:image/jpeg;base64," + 图片转base64
+        ms.Close()
+    End Function
+
     '把 nothing 字符串变成空字符串
     Public Sub 空字符(ByRef a As String, Optional ByRef b As String = Nothing, Optional ByRef c As String = Nothing, Optional ByRef d As String = Nothing, Optional ByRef e As String = Nothing)
         Dim h As String = ""
@@ -688,17 +706,25 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '使用 STMP 利用QQ的服务器发送简易的文字信息
-    Public Sub 发QQ邮件(你的邮箱 As String, 密码 As String, 收信人 As String, 标题 As String, 正文 As String)
+    Public Sub 发QQ邮件(你的邮箱 As String, 密码 As String, 收信人 As String, 标题 As String, 正文 As String, Optional 使用HTML As Boolean = False)
         Try
-            Dim hm As SmtpClient = New SmtpClient
+            Dim hm As New SmtpClient
             With hm
                 .Host = "smtp.qq.com"
                 .EnableSsl = True
                 .Port = 587
                 .UseDefaultCredentials = False
                 .Credentials = New NetworkCredential(你的邮箱, 密码)
-                .Send(你的邮箱, 收信人, 标题, 正文)
             End With
+            Dim m As New MailMessage
+            With m
+                .From = New MailAddress(你的邮箱)
+                .To.Add(收信人)
+                .Subject = 标题
+                .Body = 正文
+                .IsBodyHtml = 使用HTML
+            End With
+            hm.Send(m)
         Catch
         End Try
     End Sub
