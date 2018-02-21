@@ -630,9 +630,11 @@ Module Walkedby '走過去的常用函数合集
     Public Function 补全链接(str As String, Optional head As String = "https")
         补全链接 = str
         head = 去除(head, ":", "/")
-        Dim h As String = 左(str, 9)
-        If Not 正则包含(h, "(ht|f)tp[s]*:/+") Then 补全链接 = head + "://" + str
         If Not 尾(补全链接, "/") Then 补全链接 += "/"
+        If 头(str, "https://") OrElse 头(str, "http://") Then
+        Else
+            补全链接 = head + "://" + str
+        End If
     End Function
 
     '打开网址到浏览器
@@ -684,6 +686,7 @@ Module Walkedby '走過去的常用函数合集
         Try
             Dim hq As HttpWebRequest = WebRequest.Create(url)
             hq.Method = "GET"
+            hq.UserAgent = "Chrome"
             Dim sr As StreamReader = New StreamReader(hq.GetResponse.GetResponseStream)
             获得Http = sr.ReadToEnd
             sr.Close()
