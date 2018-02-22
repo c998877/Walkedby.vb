@@ -14,7 +14,7 @@ Imports System.Security.Permissions
 Imports Microsoft.Win32
 Imports System.Xml
 
-Public Class 在线IP地址  '获得外网 IP 和地理位置
+Public Class IP地址  '获得外网 IP 和地理位置
 
     Public 公网IP As String
     Public 地理位置 As String

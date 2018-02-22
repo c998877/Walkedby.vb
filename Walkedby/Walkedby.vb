@@ -449,7 +449,7 @@ Module Walkedby '走過去的常用函数合集
 
     '写入 str 到 path 文件里
     Public Sub 写(path As String, str As String)
-        path = Replace(path, "/", "\")
+        path = 文件名规范(path)
         If 文件存在(路径(path), False) = False Then Directory.CreateDirectory(路径(path))
         If Not 文件可写(path) Then Exit Sub
         File.WriteAllText(path, str, Text.Encoding.UTF8)
@@ -483,54 +483,6 @@ Module Walkedby '走過去的常用函数合集
         End Try
     End Function
 
-    '获得 str 的行数，最少为1行
-    Public Function 行数(str As String) As Integer
-        str = 回车规范(str)
-        行数 = 1
-        If str.Length < 2 Then Exit Function
-        行数 = Regex.Matches(str, ".*?(\r|$)").Count - 1
-    End Function
-
-    '读取 str 的第 i 行
-    Public Function 行(str As String, i As Integer, Optional def As String = "") As String
-        行 = def
-        str = 回车规范(str)
-        Dim mc As MatchCollection = Regex.Matches(str, ".*?(\r|$)")
-        If mc.Count < 1 Then Exit Function
-        Dim t As Integer = mc.Count - 1
-        If i > t Then Exit Function
-        行 = 去除(mc.Item(i - 1).ToString, vbCr, vbLf, vbCrLf)
-    End Function
-
-    '改变 str 的第 i 行为 change
-    Public Function 改行(str As String, i As Integer, change As String) As String
-        If str.Length < 2 Then str = vbCrLf
-        str = 回车规范(str)
-        改行 = str
-        Dim mc As MatchCollection = Regex.Matches(str, ".*?(\r|$)")
-        Dim t As Integer = mc.Count - 1
-        If t < i Then
-            改行 = str + 凑(vbCrLf, i - t) + change
-        ElseIf t = i Then
-            If i > 1 Then
-                改行 = Regex.Match(str, "([\s\S]*)\n").ToString + change
-            ElseIf i <= 1 Then
-                改行 = change
-            End If
-        ElseIf t > i Then
-            Dim s1 As String = ""
-            Dim s2 As String = ""
-            Dim m As Integer
-            For m = 1 To i - 1
-                s1 = s1 + (mc.Item(m - 1).ToString)
-            Next
-            For m = i + 1 To t
-                s2 = s2 + (mc.Item(m - 1).ToString)
-            Next
-            改行 = s1 + change + vbCrLf + s2
-        End If
-    End Function
-
     '检测 str 是否在列表 l 里
     Public Function 在列表(l As Object, str As String) As Boolean
         在列表 = False
@@ -539,19 +491,6 @@ Module Walkedby '走過去的常用函数合集
         For Each i As Object In l
             If str.Equals(i.ToString) Then
                 在列表 = True
-                Exit Function
-            End If
-        Next
-    End Function
-
-    '检测 str 是否是列表 l 里的某一项的一部分
-    Public Function 包含在列表(l As Object, str As String) As Boolean
-        包含在列表 = False
-        If str.Length = 0 Then Exit Function
-        If l.Count < 1 Then Exit Function
-        For Each i As Object In l
-            If 包含(i.ToString, str) Then
-                包含在列表 = True
                 Exit Function
             End If
         Next
@@ -569,25 +508,6 @@ Module Walkedby '走過去的常用函数合集
             If Trim(i).ToString.Length > 0 Then l.Add(i.ToString)
         Next
     End Sub
-
-    '把每行文字加入到列表 l
-    Public Sub 文字转列表(str As String, l As Object)
-        If str.Length < 2 Then Exit Sub
-        Dim i As Integer
-        For i = 1 To 行数(str)
-            Dim s As String = 行(str, i).ToString
-            If s.Length > 0 Then l.Add(s)
-        Next
-    End Sub
-
-    '把列表型控件的每一项变成一行行的文字
-    Public Function 列表转文字(l As Object) As String
-        Dim s As String = "", m As String = ""
-        For Each s In l
-            m = m + s + vbCrLf
-        Next
-        列表转文字 = 去右(m, 2)
-    End Function
 
     '获得UNIX时间
     Public Function UNIX时间(Optional time1 As Date = Nothing) As Long
@@ -695,6 +615,25 @@ Module Walkedby '走過去的常用函数合集
         End Try
     End Function
 
+    '把 Webbrowser 当成视频播放器
+    Public Sub 本地视频Web播放器(wb As WebBrowser, path As String, Optional Controls As Boolean = True, Optional AutoPlay As Boolean = True, Optional AutoSize As Boolean = True)
+        If 文件存在(path) Then
+            Dim i As String = 文件格式(path)
+            If i.Equals("mp4") OrElse i.Equals("webm") OrElse i.Equals("ogg") Then
+                'wb.Refresh()
+                Dim s As String = "<video src=" + vbQuote + path + vbQuote + " "
+                If Controls Then s += "controls=" + vbQuote + "controls" + vbQuote + " "
+                If AutoSize Then
+                    s += "width=" + vbQuote + wb.Width.ToString + vbQuote + " "
+                    s += "height=" + vbQuote + wb.Height.ToString + vbQuote + " "
+                End If
+                If AutoPlay Then s += "autoplay=" + vbQuote + "autoplay" + vbQuote + " "
+                s = s + " />"
+                wb.DocumentText = s
+            End If
+        End If
+    End Sub
+
     '读取一张在线图片为 Image
     Public Function 在线图片(url As String) As Image
         在线图片 = Nothing
@@ -748,68 +687,5 @@ Module Walkedby '走過去的常用函数合集
     Public Sub 文本框全选(sender As Object, e As KeyEventArgs)
         If e.Control AndAlso e.KeyCode = Keys.A Then sender.SelectAll()
     End Sub
-
-    '使用 XML 保存用户信息，不依赖 My.Settings 方便用户卸载
-    Private 设置 As XmlDocument
-    Public Function 设置XML() As String
-        设置XML = 设置.OuterXml
-    End Function
-
-    '读入初始信息使用，需要放在程序开启处
-    Public Sub 读取设置()
-        清空设置()
-        Dim h As String = 程序目录() + 去右(程序名, 4) + "_Saves.XML"
-        Dim s As String = 读(h)
-        If 头(s, "<?xml version=""1.0"" encoding=""UTF-8""?><root>") AndAlso 尾(s, "</root>") Then
-            Try
-                设置.LoadXml(s)
-            Catch ex As Exception
-                清空设置()
-            End Try
-        End If
-    End Sub
-
-    '清空所有设置
-    Public Sub 清空设置()
-        设置 = New XmlDocument
-        Dim h As String = "<?xml version=""1.0"" encoding=""UTF-8""?><root></root>"
-        设置.LoadXml(h)
-    End Sub
-
-    '放在程序结束处，保存设置
-    Public Sub 保存设置()
-        Dim h As String = 程序目录() + 去右(程序名, 4) + "_Saves.XML"
-        写(h, 设置XML)
-    End Sub
-
-    Public Sub 写设置(ID As String, Value As Object)
-        Dim h As String
-        If Value.GetType.Equals(String.Empty.GetType) Then h = Value Else h = Value.ToString
-        Dim r As XmlNode = 设置.SelectSingleNode("root"), x As XmlNode
-        x = r.SelectSingleNode(ID)
-        If IsNothing(x) = False Then r.RemoveChild(x)
-        x = 设置.CreateElement(ID)
-        x.InnerText = h
-        r.AppendChild(x)
-    End Sub
-
-    Public Function 读设置(ID As String, Optional def As String = "") As String
-        Dim r As XmlNode = 设置.SelectSingleNode("root"), x As XmlNode
-        x = r.SelectSingleNode(ID)
-        If Not IsNothing(x) Then
-            读设置 = x.InnerText
-        Else
-            读设置 = def
-            写设置(ID, def)
-        End If
-    End Function
-
-    Public Function 读设置N(id As String, Optional def As Double = 0) As Double
-        读设置N = Val(读设置(id, def.ToString))
-    End Function
-
-    Public Function 读设置B(id As String, Optional def As Boolean = True) As Boolean
-        读设置B = (读设置(id, def.ToString) = "True")
-    End Function
 
 End Module
