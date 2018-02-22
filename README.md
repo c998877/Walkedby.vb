@@ -10,7 +10,7 @@ Module Walkedby 走過去的常用函数合集
 （ Class 让我感觉烦恼，UTF-8 让我身心舒畅）    
 
 - [Walkedby.vb 【主要函数合集】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/Walkedby.vb)  
-- [Walkedby_SteamWebUser.vb 【Steam Web API 类】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/SteamWebUser.vb)  
+- [Walkedby_SteamWebUser.vb 【Steam Web API 类】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/Walkedby_SteamWebUser.vb)  
 - [Walkedby_ControlMoving.vb 【用鼠标挪动窗体或者控件】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/Walkedby_ControlMoving.vb)  
-- [Walkedby_Net.vb 【获得外网IP以及检测网速】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/Walkedby_ControlMoving.vb)
+- [Walkedby_Net.vb 【获得外网IP以及检测网速】](https://github.com/gordonwalkedby/Walkedby.vb/blob/master/Walkedby/Walkedby_Net.vb)
 
