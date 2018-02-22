@@ -77,7 +77,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Windows.Forms" />
@@ -125,7 +128,6 @@
     <Compile Include="Walkedby_SteamWebUser.vb" />
     <Compile Include="Walkedby.vb" />
     <Compile Include="Walkedby_ControlMoving.vb" />
-    <Compile Include="Walkedby_XML.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">

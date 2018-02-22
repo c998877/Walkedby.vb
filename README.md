@@ -1,4 +1,4 @@
-\# Walkedby.vb
+# Walkedby.vb
 Module Walkedby 走過去的常用函数合集
 
 我自己写的和用的一堆 VB.NET 函数，通常只适合 Visual Basic 2017。（我没试过其他版本）  
