@@ -59,7 +59,7 @@ Module Walkedby '走過去的常用函数合集
         If Not IsNothing(s) Then i.Save(path, s, h)
     End Sub
 
-    '把 bitmap 变成 base64 字符串
+    '把 jpg 的 bitmap 变成 base64 字符串
     Public Function 图片转base64(i As Bitmap, Optional HeadStr As Boolean = False, Optional quality As Integer = 90) As String
         图片转base64 = ""
         If IsNothing(i) Then Exit Function
@@ -96,6 +96,14 @@ Module Walkedby '走過去的常用函数合集
         If IsNothing(d) Then d = h
         If IsNothing(e) Then e = h
     End Sub
+
+    '文字与字节互换
+    Public Function 文字转字节(str As String) As Byte()
+        文字转字节 = Encoding.UTF8.GetBytes(str)
+    End Function
+    Public Function 字节转文字(s As Byte()) As String
+        字节转文字 = Encoding.UTF8.GetString(s)
+    End Function
 
     '左右，相当于 left right
     Public Function 左(str As String, i As Object) As String
@@ -179,6 +187,11 @@ Module Walkedby '走過去的常用函数合集
         str = 回车规范(str)
         去多余回车 = str
         去多余回车 = Regex.Replace(str, "[\r\n]{5,}", vbCrLf + vbCrLf)
+    End Function
+
+    '把字符串变成 "字符串"
+    Public Function 引(str As String) As String
+        引 = vbQuote + str + vbQuote
     End Function
 
     '取得范围内的随机整数
@@ -473,13 +486,27 @@ Module Walkedby '走過去的常用函数合集
 
     '读入 path 文件为字符串
     Public Function 读(path As String, Optional 默认 As String = "") As String
-        path = Replace(path, "/", "\")
+        path = 文件名规范(path)
         读 = 默认
         If Not 文件存在(path) Then Exit Function
         Try
             读 = File.ReadAllText(path, Text.Encoding.UTF8)
         Catch
             读 = 默认
+        End Try
+    End Function
+
+    '读入 path 文件为比特
+    Public Function 读比特(path As String) As Byte()
+        Dim m(1) As Byte
+        读比特 = m
+        path = 文件名规范(path)
+        If Not 文件存在(path) Then Exit Function
+        Try
+            Dim i As New BinaryReader(File.OpenRead(path))
+            读比特 = i.ReadBytes(文件大小("e:\1.jpg", "b"))
+            i.Close()
+        Catch
         End Try
     End Function
 
@@ -546,20 +573,9 @@ Module Walkedby '走過去的常用函数合集
         Next
     End Function
 
-    '补全链接的开头
-    Public Function 补全链接(str As String, Optional head As String = "https")
-        补全链接 = str
-        head = 去除(head, ":", "/")
-        If Not 尾(补全链接, "/") Then 补全链接 += "/"
-        If 头(str, "https://") OrElse 头(str, "http://") Then
-        Else
-            补全链接 = head + "://" + str
-        End If
-    End Function
-
     '打开网址到浏览器
     Public Sub 浏览器打开(str As String)
-        Process.Start(补全链接(str))
+        Process.Start(str)
     End Sub
 
     '便捷的控制台输出，多个选项自动分开
@@ -567,19 +583,19 @@ Module Walkedby '走過去的常用函数合集
         Dim s As String = ""
         Dim t As String = "     "
         If Not IsNothing(a) Then
-            If a.GetType.Equals(String.Empty.GetType) Then s = s + a + vbTab Else s = s + a.ToString + t
+            s = s + a.ToString + t
         End If
         If Not IsNothing(b) Then
-            If b.GetType.Equals(String.Empty.GetType) Then s = s + b + vbTab Else s = s + b.ToString + t
+            s = s + b.ToString + t
         End If
         If Not IsNothing(c) Then
-            If c.GetType.Equals(String.Empty.GetType) Then s = s + c + vbTab Else s = s + c.ToString + t
+            s = s + c.ToString + t
         End If
         If Not IsNothing(d) Then
-            If d.GetType.Equals(String.Empty.GetType) Then s = s + d + vbTab Else s = s + d.ToString + t
+            s = s + d.ToString + t
         End If
         If Not IsNothing(e) Then
-            If e.GetType.Equals(String.Empty.GetType) Then s = s + e + vbTab Else s = s + e.ToString + t
+            s = s + e.ToString + t
         End If
         Console.WriteLine(s)
     End Sub
@@ -601,7 +617,6 @@ Module Walkedby '走過去的常用函数合集
     '简易的 HTTP GET ，可以很快获得 HTML 内容
     Public Function 获得Http(url As String, Optional df As String = "ERROR") As String
         获得Http = df
-        url = 补全链接(url)
         If url.Length < 8 Then Exit Function
         Try
             Dim hq As HttpWebRequest = WebRequest.Create(url)
@@ -637,7 +652,6 @@ Module Walkedby '走過去的常用函数合集
     '读取一张在线图片为 Image
     Public Function 在线图片(url As String) As Image
         在线图片 = Nothing
-        url = 补全链接(url)
         If url.Length < 8 Then Exit Function
         Try
             Dim hq As HttpWebRequest = WebRequest.Create(url)

@@ -76,3 +76,65 @@ Public Class 网速监测   '一个监测网速的库
     End Sub
 
 End Class
+
+Public Class 分段POST   '用来 POST 分段数据的 http 请求
+
+    Private h As HttpWebRequest
+    Private bd As String
+    Private s As Stream
+    Private heading As String
+    Private 数据 As String
+
+    Public Sub New(url As String)
+        h = WebRequest.Create(url)
+        数据 = ""
+        bd = "---------------" + Now.Ticks.ToString("x")
+        heading = "--" + bd + vbCrLf
+        h.Method = "POST"
+        h.UserAgent = "vb"
+        h.ContentType = "multipart/form-data; boundary=" + bd
+        s = h.GetRequestStream
+    End Sub
+
+    Private Sub 加头()
+        Dim b As Byte() = 文字转字节(heading)
+        s.Write(b, 0, b.Length)
+        数据 += heading
+    End Sub
+
+    Public Sub 新参数(name As String, value As String, Optional type As String = "TEXT/HTML")
+        加头()
+        Dim i As String = "Content-Disposition: form-data; name=" + 引(name) + vbCrLf + "Content-Type: " + type + vbCrLf + vbCrLf + value + vbCrLf
+        Dim b As Byte() = 文字转字节(i)
+        数据 += i
+        s.Write(b, 0, b.Length)
+    End Sub
+
+    Public Sub 新文件(name As String, filename As String, type As String, file As Byte())
+        加头()
+        Dim i As String = "Content-Disposition: form-data; name=" + 引(name) + "; filename=" + 引(filename) + vbCrLf + "Content-Type: " + type + vbCrLf + vbCrLf
+        Dim b As Byte() = 文字转字节(i)
+        s.Write(b, 0, b.Length)
+        s.Write(file, 0, file.Length)
+        数据 += i
+    End Sub
+
+    Public Function 传回() As String
+        Dim i As String = vbCrLf + "--" + bd + "--"
+        Dim b As Byte() = 文字转字节(i)
+        s.Write(b, 0, b.Length)
+        数据 += i
+        Try
+            Dim rs As New StreamReader(h.GetResponse.GetResponseStream)
+            传回 = rs.ReadToEnd
+            rs.Close()
+        Catch ex As Exception
+            传回 = ex.Message
+        End Try
+    End Function
+
+    Public Function POST数据() As String
+        POST数据 = 数据 + vbCrLf + "--" + bd + "--"
+    End Function
+
+End Class
