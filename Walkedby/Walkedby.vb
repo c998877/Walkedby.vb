@@ -12,6 +12,7 @@ Imports System.Net
 Imports System.Net.Mail
 Imports System.Security.Permissions
 Imports Microsoft.Win32
+Imports Microsoft.VisualBasic.Devices
 Imports System.Xml
 
 Module Walkedby '走過去的常用函数合集

@@ -13,6 +13,9 @@ Namespace My
 
         End Sub
 
+        Private Sub MyApplication_NetworkAvailabilityChanged(sender As Object, e As NetworkAvailableEventArgs) Handles Me.NetworkAvailabilityChanged
+
+        End Sub
     End Class
 
 End Namespace

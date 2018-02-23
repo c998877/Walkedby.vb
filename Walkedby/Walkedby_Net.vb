@@ -86,14 +86,18 @@ Public Class 分段POST   '用来 POST 分段数据的 http 请求
     Private 数据 As String
 
     Public Sub New(url As String)
-        h = WebRequest.Create(url)
-        数据 = ""
-        bd = "---------------" + Now.Ticks.ToString("x")
-        heading = "--" + bd + vbCrLf
-        h.Method = "POST"
-        h.UserAgent = "vb"
-        h.ContentType = "multipart/form-data; boundary=" + bd
-        s = h.GetRequestStream
+        Try
+            h = WebRequest.Create(url)
+            数据 = ""
+            bd = "---------------" + Now.Ticks.ToString("x")
+            heading = "--" + bd + vbCrLf
+            h.Method = "POST"
+            h.UserAgent = "vb"
+            h.ContentType = "multipart/form-data; boundary=" + bd
+            s = h.GetRequestStream
+        Catch ex As Exception
+            s = New MemoryStream
+        End Try
     End Sub
 
     Private Sub 加头()

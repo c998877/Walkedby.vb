@@ -43,13 +43,13 @@ Public Class Form1
         Next
         filepath = i
         If i.Length < 5 Then Exit Sub
-        TxtBack.Text = "上传ing"
         up = New Thread(AddressOf 上传)
         up.Start()
         Button3.Enabled = True
     End Sub
 
     Sub 上传()
+        TxtBack.Text = "上传ing"
         Dim i As String = filepath
         Pic.Image = Image.FromFile(i)
         Dim hq As New 分段POST("https://sm.ms/api/upload")
@@ -65,7 +65,7 @@ Public Class Form1
             DeleteURL = 正则提取(l, "<delete>", "</delete>")
         Else
             TxtBack.BackColor = redcolor
-            TxtBack.Text = l
+            TxtBack.Text = "失败"
         End If
         Button3.Enabled = False
     End Sub
@@ -90,6 +90,7 @@ Public Class Form1
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
         If up.IsAlive Then up.Abort()
+        删除文件(程序目录() + "temp")
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
