@@ -30,6 +30,7 @@ Partial Class Form1
         Me.Button3 = New System.Windows.Forms.Button()
         Me.Pic = New System.Windows.Forms.PictureBox()
         Me.Button4 = New System.Windows.Forms.Button()
+        Me.Button5 = New System.Windows.Forms.Button()
         CType(Me.Pic, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -56,9 +57,10 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(362, 25)
+        Me.Button1.Enabled = False
+        Me.Button1.Location = New System.Drawing.Point(362, 32)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(79, 30)
+        Me.Button1.Size = New System.Drawing.Size(79, 34)
         Me.Button1.TabIndex = 3
         Me.Button1.TabStop = False
         Me.Button1.Text = "COPY"
@@ -118,12 +120,23 @@ Partial Class Form1
         Me.Button4.Text = "SM.MS"
         Me.Button4.UseVisualStyleBackColor = True
         '
+        'Button5
+        '
+        Me.Button5.Location = New System.Drawing.Point(248, 3)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(192, 26)
+        Me.Button5.TabIndex = 9
+        Me.Button5.TabStop = False
+        Me.Button5.Text = "导入剪贴板图片"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AllowDrop = True
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(453, 403)
+        Me.Controls.Add(Me.Button5)
         Me.Controls.Add(Me.Button4)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.TxtHistory)
@@ -153,4 +166,5 @@ Partial Class Form1
     Friend WithEvents TxtHistory As TextBox
     Friend WithEvents Button3 As Button
     Friend WithEvents Button4 As Button
+    Friend WithEvents Button5 As Button
 End Class

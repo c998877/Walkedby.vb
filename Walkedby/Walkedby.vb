@@ -428,7 +428,7 @@ Module Walkedby '走過去的常用函数合集
 
     '取得本程序的文件名，包含".exe"
     Public Function 程序名() As String
-        程序名 = 文件名(Application.ExecutablePath)
+        程序名 = My.Application.Info.AssemblyName + ".exe"
     End Function
 
     '检测系统是不是64位的

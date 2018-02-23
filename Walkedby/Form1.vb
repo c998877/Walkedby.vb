@@ -29,12 +29,10 @@ Public Class Form1
         Button2.Enabled = False
         Pic.Image = Nothing
         Button1.Enabled = False
-        线程越界()
     End Sub
 
     Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
         filepath = ""
-        up = New Thread(AddressOf 上传)
         Dim i As String = ""
         For Each i In e.Data.GetData(DataFormats.FileDrop)
             Dim h As String = 文件格式(i)
@@ -46,6 +44,7 @@ Public Class Form1
         filepath = i
         If i.Length < 5 Then Exit Sub
         TxtBack.Text = "上传ing"
+        up = New Thread(AddressOf 上传)
         up.Start()
         Button3.Enabled = True
     End Sub
@@ -101,6 +100,24 @@ Public Class Form1
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         浏览器打开("https://sm.ms/")
+    End Sub
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        线程越界()
+    End Sub
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        Dim i As Image = Clipboard.GetImage
+        Dim h As String = 程序目录() + "temp"
+        If Not 文件存在(h, False) Then Directory.CreateDirectory(h)
+        filepath = h + "\" + 随机字母(5) + ".png"
+        i.Save(filepath)
+        If 文件大小(filepath, "m") > 5 Then
+            filepath = ""
+        Else
+            up = New Thread(AddressOf 上传)
+            up.Start()
+        End If
     End Sub
 
 End Class
