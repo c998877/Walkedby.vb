@@ -14,111 +14,91 @@ Imports System.Net.Mail
 Imports System.Security.Permissions
 Imports Microsoft.Win32
 Imports System.Xml
+Imports System.Security.Cryptography
 
 Public Class Form1
 
-    Dim DeleteURL As String = ""
-    Dim filepath As String = ""
-    Dim up As Thread = New Thread(AddressOf 上传)
-    Dim redcolor As Color = 随机颜色(255, 128, 128)
+    Dim th As New Thread(AddressOf 上传)
+    Dim PicURL As String = ""
 
-    Private Sub Form1_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
-        e.Effect = DragDropEffects.Link
-        TxtBack.BackColor = redcolor
-        TxtBack.Text = ""
-        Button2.Enabled = False
-        Pic.Image = Nothing
+    Sub 上传()
+        Dim t As String = LabPIC.Text
+        If Not 文件存在(t) Then
+            TxtB.Text = "文件已经丢失，无法继续上传。"
+            清空()
+            Exit Sub
+        End If
+        Dim i As New 分段POST("https://api.vc.bilibili.com/api/v1/image/upload")
+        TxtB.Text = "上传中，请稍等"
         Button1.Enabled = False
+        Dim h As Byte() = 读比特(t)
+        i.新文件("file_up", 文件名(t), "image/png", h)
+        i.新参数("biz", "draw")
+        i.新参数("category", "daily")
+        t = Replace(i.传回, "\/", "/")
+        Dim b As String = ""
+        If 包含(t, "success") Then
+            PicURL = 正则提取(t, "image_url"":""", """,", False)
+            b = "上传成功" + vbCrLf + PicURL + vbCrLf + "图片宽度：" + 只要数字(正则提取(t, "image_width", ",", False)) + vbCrLf + "图片高度：" + 只要数字(正则提取(t, "image_height", "}", False))
+        Else
+            b = "上传失败，详情：" + vbCrLf + t
+            PicURL = ""
+        End If
+        TxtB.Text = b
+    End Sub
+
+    Sub 清空()
+        Button1.Enabled = False
+        PIC.Image = Nothing
+        LabPIC.Text = "无图片"
     End Sub
 
     Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles Me.DragDrop
-        filepath = ""
-        Dim i As String = ""
-        For Each i In e.Data.GetData(DataFormats.FileDrop)
-            Dim h As String = 文件格式(i)
-            If h.Equals("jpg") OrElse h.Equals("png") OrElse h.Equals("gif") OrElse h.Equals("bmp") Then
-                If 文件大小(i, "m") <= 5 Then Exit For
+        清空()
+        For Each i As String In e.Data.GetData(DataFormats.FileDrop)
+            If 文件存在(i) AndAlso 合适文件格式(i, "jpg", "png", "jpeg") AndAlso 文件大小(i) < 20 Then
+                PIC.Image = Image.FromFile(i)
+                LabPIC.Text = i
+                Button1.Enabled = True
+                Exit For
             End If
-            i = ""
         Next
-        filepath = i
-        If i.Length < 5 Then Exit Sub
-        up = New Thread(AddressOf 上传)
-        up.Start()
-        Button3.Enabled = True
     End Sub
 
-    Sub 上传()
-        TxtBack.Text = "上传ing"
-        Dim i As String = filepath
-        Pic.Image = Image.FromFile(i)
-        Dim hq As New 分段POST("https://sm.ms/api/upload")
-        hq.新参数("format", "xml")
-        hq.新文件("smfile", 文件名(i), "image/" + 文件格式(i), 读比特(i))
-        Dim l As String = hq.传回
-        If 包含(l, "<code>success</code>") Then
-            TxtBack.BackColor = Color.LightGreen
-            TxtBack.Text = 正则提取(l, "<url>", "</url>")
-            TxtHistory.Text += vbCrLf + TxtBack.Text
-            Button2.Enabled = True
-            Button1.Enabled = True
-            DeleteURL = 正则提取(l, "<delete>", "</delete>")
-        Else
-            TxtBack.BackColor = redcolor
-            TxtBack.Text = "失败"
-        End If
-        Button3.Enabled = False
-    End Sub
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Clipboard.SetText(TxtBack.Text)
+    Private Sub Form1_DragEnter(sender As Object, e As DragEventArgs) Handles Me.DragEnter
+        e.Effect = DragDropEffects.Link
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        Dim i As String = 获得Http(DeleteURL)
-        If 包含(i, "File delete success") Then
-            TxtBack.BackColor = redcolor
-            Button2.Enabled = False
-            TxtBack.Text = "成功删除刚刚的图片"
-            TxtHistory.Text += "(已删除)"
+        清空()
+        If IsNothing(Clipboard.GetImage) Then Exit Sub
+        Dim i As Image = Clipboard.GetImage
+        Dim h As String = 程序目录() + "tmp.jpg"
+        i.Save(h)
+        If 文件大小(h) < 20 Then
+            LabPIC.Text = h
+            PIC.Image = i
+            Button1.Enabled = True
         End If
     End Sub
 
-    Private Sub TxtHistory_KeyDown(sender As Object, e As KeyEventArgs) Handles TxtHistory.KeyDown
-        文本框全选(sender, e)
-    End Sub
-
-    Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-        If up.IsAlive Then up.Abort()
-        删除文件(程序目录() + "temp")
-    End Sub
-
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        If up.IsAlive Then up.Abort()
-        Button3.Enabled = False
-        TxtBack.Text = "已经取消"
-    End Sub
-
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        浏览器打开("https://sm.ms/")
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        th = New Thread(AddressOf 上传)
+        th.Start()
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         线程越界()
     End Sub
 
-    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
-        Dim i As Image = Clipboard.GetImage
-        Dim h As String = 程序目录() + "temp"
-        If Not 文件存在(h, False) Then Directory.CreateDirectory(h)
-        filepath = h + "\" + 随机字母(5) + ".png"
-        i.Save(filepath)
-        If 文件大小(filepath, "m") > 5 Then
-            filepath = ""
-        Else
-            up = New Thread(AddressOf 上传)
-            up.Start()
-        End If
+    Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        If th.IsAlive Then th.Abort()
+        删除文件(程序目录() + "tmp.jpg")
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        If PicURL.Length > 5 Then Clipboard.SetText(PicURL)
     End Sub
 
 End Class
+

@@ -61,8 +61,8 @@ Module Walkedby '走過去的常用函数合集
     End Sub
 
     '把 jpg 的 bitmap 变成 base64 字符串
-    Public Function 图片转base64(i As Bitmap, Optional HeadStr As Boolean = False, Optional quality As Integer = 90) As String
-        图片转base64 = ""
+    Public Function JPG转base64(i As Bitmap, Optional HeadStr As Boolean = False, Optional quality As Integer = 90) As String
+        JPG转base64 = ""
         If IsNothing(i) Then Exit Function
         Dim h As New Imaging.EncoderParameters
         h.Param(0) = New Imaging.EncoderParameter(Imaging.Encoder.Quality, quality)
@@ -73,9 +73,33 @@ Module Walkedby '走過去的常用函数合集
         Next
         Dim ms As New MemoryStream
         If Not IsNothing(s) Then i.Save(ms, s, h)
-        图片转base64 = Convert.ToBase64String(ms.ToArray)
-        If HeadStr Then 图片转base64 = "data:image/jpeg;base64," + 图片转base64
+        JPG转base64 = Convert.ToBase64String(ms.ToArray)
+        If HeadStr Then JPG转base64 = "data:image/jpeg;base64," + JPG转base64
         ms.Close()
+    End Function
+
+    '把 jpg 转成字节
+    Public Function JPG转字节(i As Bitmap) As Byte()
+        Dim m(1) As Byte
+        JPG转字节 = m
+        If IsNothing(i) Then Exit Function
+        Dim ms As New MemoryStream
+        i.Save(ms, Imaging.ImageFormat.Jpeg)
+        Dim l(ms.Length) As Byte
+        ms.Read(l, 0, ms.Length)
+        ms.Close()
+        JPG转字节 = l
+    End Function
+    Public Function PNG转字节(i As Bitmap) As Byte()
+        Dim m(1) As Byte
+        PNG转字节 = m
+        If IsNothing(i) Then Exit Function
+        Dim ms As New MemoryStream
+        i.Save(ms, Imaging.ImageFormat.Png)
+        Dim l(ms.Length) As Byte
+        ms.Read(l, 0, ms.Length)
+        ms.Close()
+        PNG转字节 = l
     End Function
 
     '把 nothing 字符串变成空字符串
@@ -316,6 +340,17 @@ Module Walkedby '走過去的常用函数合集
         文件格式 = LCase(去左(Regex.Match(path, "\.+.*").ToString, 1))
     End Function
 
+    Public Function 合适文件格式(path As String, format1 As String, Optional format2 As String = "", Optional format3 As String = "", Optional format4 As String = "", Optional format5 As String = "") As Boolean
+        合适文件格式 = True
+        Dim i As String = 文件格式(path)
+        If format1.Length > 0 AndAlso i.Equals(format1) Then Exit Function
+        If format2.Length > 0 AndAlso i.Equals(format2) Then Exit Function
+        If format3.Length > 0 AndAlso i.Equals(format3) Then Exit Function
+        If format4.Length > 0 AndAlso i.Equals(format4) Then Exit Function
+        If format5.Length > 0 AndAlso i.Equals(format5) Then Exit Function
+        合适文件格式 = False
+    End Function
+
     '获得路径或者倒数第二层文件夹
     Public Function 路径(path As String) As String
         路径 = Regex.Match(path, ".*\\").ToString
@@ -505,7 +540,7 @@ Module Walkedby '走過去的常用函数合集
         If Not 文件存在(path) Then Exit Function
         Try
             Dim i As New BinaryReader(File.OpenRead(path))
-            读比特 = i.ReadBytes(文件大小("e:\1.jpg", "b"))
+            读比特 = i.ReadBytes(文件大小(path, "b"))
             i.Close()
         Catch
         End Try

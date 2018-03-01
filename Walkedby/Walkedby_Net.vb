@@ -85,14 +85,14 @@ Public Class 分段POST   '用来 POST 分段数据的 http 请求
     Private heading As String
     Private 数据 As String
 
-    Public Sub New(url As String)
+    Public Sub New(url As String, Optional ua As String = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36")
         Try
             h = WebRequest.Create(url)
             数据 = ""
             bd = "---------------" + Now.Ticks.ToString("x")
             heading = "--" + bd + vbCrLf
             h.Method = "POST"
-            h.UserAgent = "vb"
+            h.UserAgent = ua
             h.ContentType = "multipart/form-data; boundary=" + bd
             s = h.GetRequestStream
         Catch ex As Exception
@@ -123,7 +123,7 @@ Public Class 分段POST   '用来 POST 分段数据的 http 请求
         数据 += i
     End Sub
 
-    Public Function 传回() As String
+    Public Function 传回(Optional def As String = "") As String
         Dim i As String = vbCrLf + "--" + bd + "--"
         Dim b As Byte() = 文字转字节(i)
         s.Write(b, 0, b.Length)
@@ -133,7 +133,11 @@ Public Class 分段POST   '用来 POST 分段数据的 http 请求
             传回 = rs.ReadToEnd
             rs.Close()
         Catch ex As Exception
-            传回 = ex.Message
+            If def.Length < 1 Then
+                传回 = ex.Message
+            Else
+                传回 = def
+            End If
         End Try
     End Function
 
