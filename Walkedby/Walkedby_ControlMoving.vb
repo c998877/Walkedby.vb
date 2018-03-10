@@ -32,9 +32,9 @@ Module Walkedby_ControlMoving
     Private Sub 正在拖动控件()
         If Not CmON Then Exit Sub
         Dim i As Integer, hx As Integer = 窗口边框X(CmForm), hy As Integer = 窗口边框Y(CmForm)
-        i = Cursor.Position.X - CmForm.Left() - CmX - hx
+        i = 鼠标X - CmForm.Left() - CmX - hx
         If i >= 0 AndAlso i < CmForm.Width - Cm.Width - hx Then Cm.Left = i
-        i = Cursor.Position.Y - CmForm.Top - CmY - hy
+        i = 鼠标Y - CmForm.Top - CmY - hy
         If i >= 0 AndAlso i < CmForm.Height - Cm.Height - hy Then Cm.Top = i
     End Sub
 
@@ -47,8 +47,8 @@ Module Walkedby_ControlMoving
         Cm = c
         If CmForm.WindowState = FormWindowState.Maximized Then CmForm.WindowState = FormWindowState.Normal
         CmON = True
-        CmX = Cursor.Position.X - 窗口边框X(CmForm) - CmForm.Left
-        CmY = Cursor.Position.Y - 窗口边框Y(CmForm) - CmForm.Top
+        CmX = 鼠标X - 窗口边框X(CmForm) - CmForm.Left
+        CmY = 鼠标Y - 窗口边框Y(CmForm) - CmForm.Top
         AddHandler Cm.MouseMove, AddressOf 正在拖动窗体
         AddHandler Cm.MouseUp, AddressOf 结束拖动控件
     End Sub
@@ -56,9 +56,9 @@ Module Walkedby_ControlMoving
     Private Sub 正在拖动窗体()
         If Not CmON Then Exit Sub
         Dim i As Integer
-        i = Cursor.Position.X - CmX - 窗口边框X(CmForm)
+        i = 鼠标X - CmX - 窗口边框X(CmForm)
         CmForm.Left = i
-        i = Cursor.Position.Y - CmY - 窗口边框Y(CmForm)
+        i = 鼠标Y - CmY - 窗口边框Y(CmForm)
         CmForm.Top = i
         Thread.Sleep(1)
     End Sub

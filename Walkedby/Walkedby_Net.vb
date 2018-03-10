@@ -14,36 +14,41 @@ Imports System.Security.Permissions
 Imports Microsoft.Win32
 Imports System.Xml
 
-Public Class IP地址  '获得外网 IP 和地理位置
+Public Class 获得IP地址  '获得外网 IP 和地理位置
 
-    Public 公网IP As String
-    Public 地理位置 As String
-    Public 原文 As String
+    Private txt As String
 
     Public Sub New()
-        刷新()
+        txt = 获得Http("http://ip.chinaz.com/getip.aspx", "{ip:'0.0.0.0',address:'未知'}")
     End Sub
 
-    Public Sub 刷新()
-        原文 = 获得Http("http://ip.chinaz.com/getip.aspx", "{ip:'0.0.0.0',address:'获取失败'}")
-        公网IP = 正则提取(原文, "ip:'", "',")
-        地理位置 = 正则提取(原文, "address:'", "'}")
-    End Sub
+    Public ReadOnly Property 公网IP As String
+        Get
+            Return 提取(txt, "ip:'", "',")
+        End Get
+    End Property
+
+    Public ReadOnly Property 地理位置 As String
+        Get
+            Return 提取(txt, "address:'", "'}")
+        End Get
+    End Property
 
 End Class
 
-Public Class 网速监测   '一个监测网速的库
+Public Class 网速监测   '后台新建一个线程监测网速
 
     Private card As NetworkInformation.NetworkInterface
     Private LastDown As Long = 0
     Private LastUP As Long = 0
-    Public 下载网速 As Long
-    Public 上传网速 As Long
+    Private AllDown As Long = 0
+    Private AllUP As Long = 0
+    Private Down As Long = 0
+    Private UP As Long = 0
+    Private FirstTime As Boolean = True
     Private th As Thread
 
     Public Sub New(Optional CardName As String = "")
-        下载网速 = 0
-        上传网速 = 0
         For Each i As NetworkInformation.NetworkInterface In NetworkInformation.NetworkInterface.GetAllNetworkInterfaces
             If CardName.Length < 1 OrElse 包含(i.Description, CardName) Then
                 card = i
@@ -58,18 +63,29 @@ Public Class 网速监测   '一个监测网速的库
     End Sub
 
     Private Sub Watching()
-        Dim FirstTime As Boolean = True
         Do While True
-            Dim h As Long = card.GetIPStatistics.BytesReceived
-            If Not FirstTime Then 下载网速 = (h - LastDown) / 1024
-            LastDown = h
-            h = card.GetIPStatistics.BytesSent
-            If Not FirstTime Then 上传网速 = (h - LastUP) / 1024
-            LastUP = h
+            AllDown = card.GetIPStatistics.BytesReceived
+            If Not FirstTime Then Down = AllDown - LastDown
+            LastDown = AllDown
+            AllUP = card.GetIPStatistics.BytesSent
+            If Not FirstTime Then UP = AllUP - LastUP
+            LastUP = AllUP
             FirstTime = False
             Thread.Sleep(1000)
         Loop
     End Sub
+
+    Public ReadOnly Property 下载网速(Optional unit As String = "k") As Single
+        Get
+            Return 单位转换(Down,, unit)
+        End Get
+    End Property
+
+    Public ReadOnly Property 上传网速(Optional unit As String = "k") As Single
+        Get
+            Return 单位转换(UP,, unit)
+        End Get
+    End Property
 
     Public Sub 停止监控()
         If th.IsAlive Then th.Abort()
@@ -141,8 +157,10 @@ Public Class 分段POST   '用来 POST 分段数据的 http 请求
         End Try
     End Function
 
-    Public Function POST数据() As String
-        POST数据 = 数据 + vbCrLf + "--" + bd + "--"
-    End Function
+    Public ReadOnly Property 数据预览 As String
+        Get
+            Return 数据 + vbCrLf + "--" + bd + "--"
+        End Get
+    End Property
 
 End Class

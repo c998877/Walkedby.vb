@@ -36,6 +36,18 @@ Module Walkedby '走過去的常用函数合集
         End Get
     End Property
 
+    '鼠标的位置
+    Public ReadOnly Property 鼠标X As Integer
+        Get
+            Return Cursor.Position.X
+        End Get
+    End Property
+    Public ReadOnly Property 鼠标Y As Integer
+        Get
+            Return Cursor.Position.Y
+        End Get
+    End Property
+
     '获得屏幕的截图
     Public Function 截屏() As Bitmap
         Dim b As Bitmap = New Bitmap(屏幕宽, 屏幕高)
@@ -192,19 +204,16 @@ Module Walkedby '走過去的常用函数合集
         If Regex.IsMatch(str, find) Then 正则包含 = True
     End Function
 
-    '正则提取头尾字符中间的字符
-    Public Function 正则提取(str As String, head As String, tail As String, Optional multiLine As Boolean = True, Optional forceCase As Boolean = True) As String
-        正则提取 = ""
+    '提取头尾字符中间的字符
+    Public Function 提取(str As String, head As String, tail As String) As String
+        提取 = ""
         If str.Length < 1 OrElse head.Length + tail.Length > str.Length OrElse head.Length < 1 OrElse tail.Length < 1 Then Exit Function
-        If Not forceCase Then
-            str = LCase(str)
-            head = LCase(head)
-            tail = LCase(tail)
-        End If
-        Dim x As String = ".*?"
-        If multiLine Then x = "([\s\S]*?)"
-        Dim s As String = Regex.Match(str, head + x + tail).ToString
-        正则提取 = 去左右(s, head, tail)
+        Dim h As Integer = InStr(str, head, CompareMethod.Text)
+        If h < 1 Then Exit Function
+        Dim m As String = Mid(str, h + head.Length, str.Length)
+        h = InStr(m, tail, CompareMethod.Text)
+        If h < 1 Then Exit Function
+        提取 = 左(m, h - 1)
     End Function
 
     '去掉多余的回车换行
@@ -227,12 +236,13 @@ Module Walkedby '走過去的常用函数合集
             a = t
         End If
         Randomize()
-        随机 = Int(Rnd() * (a - b + 1） + b)
+        随机 = Fix(Rnd() * (a - b + 1） + b)
     End Function
 
     '随机一个布林值
     Public Function 随机B() As Boolean
-        随机B = (随机(1, 2) = 2)
+        Randomize()
+        随机B = (Rnd() >= 0.5)
     End Function
 
     '随机一个颜色，但是可以固定RGBA
@@ -253,6 +263,21 @@ Module Walkedby '走過去的常用函数合集
         随机字母 = s
     End Function
 
+    '生成随机的字符串
+    Public Function 随机S(Optional l As Integer = 10) As String
+        Dim i As Integer, s As String = ""
+        For i = 1 To l
+            If 随机B() Then
+                s += 随机(0, 9).ToString
+            Else
+                Dim m As String = 随机字母(1)
+                If 随机B() Then m = UCase(m)
+                s += m
+            End If
+        Next
+        随机S = s
+    End Function
+
     '随机a小段，每小段b长度，用s相连的 KEY 出来
     Public Function 随机KEY(Optional a As Integer = 5, Optional b As Integer = 5, Optional s As String = "-") As String
         随机KEY = s
@@ -267,12 +292,16 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '把数字格式化为指定小数位数的字符串
-    Public Function 标准数字(i As Double, Optional 小数 As Integer = 2) As String
-        If 小数 < 0 Then 小数 = 0
-        If 小数 > 15 Then 小数 = 15
+    Public Function 保留小数位(i As Double, Optional count As Integer = 2) As String
+        If count > 10 Then count = 10
+        If count < 0 Then count = 0
         Dim h As String = Trim(Str(i))
-        Dim r As String = 左(只要数字(Regex.Match(h, "\.[0-9].*$").ToString + "000000000000000000000000"), 小数)
-        标准数字 = Regex.Match(h, "[0-9].*\.").ToString + r
+        If count = 0 Then
+            保留小数位 = 只要数字(Regex.Match(h, "[0-9].*\.").ToString)
+            Exit Function
+        End If
+        Dim r As String = 左(只要数字(Regex.Match(h, "\.[0-9].*$").ToString + 凑("0", count)), count)
+        保留小数位 = Regex.Match(h, "[0-9].*\.").ToString + r
     End Function
 
     '从 str 中去除指定的文字
@@ -319,18 +348,12 @@ Module Walkedby '走過去的常用函数合集
 
     '回车规范化，统一到 vbcrlf
     Public Function 回车规范(str As String) As String
+        Dim i3 As String = 随机字母()
+        str = Replace(str, vbCrLf, i3)
+        str = Replace(str, vbLf, vbCrLf)
+        str = Replace(str, vbCr, vbCrLf)
+        str = Replace(str, i3, vbCrLf)
         回车规范 = str
-        Dim cr As Integer = Regex.Matches(str, "\r").Count
-        Dim lf As Integer = Regex.Matches(str, "\n").Count
-        If cr > lf Then
-            str = 正则去除(str, "\n")
-            回车规范 = Regex.Replace(str, "\r", vbCrLf)
-        ElseIf cr < lf Then
-            str = 正则去除(str, "\r")
-            回车规范 = Regex.Replace(str, "\n", vbCrLf)
-        ElseIf cr = lf Then
-            回车规范 = str
-        End If
     End Function
 
     '获得小写文件格式名，不包含第一个点
@@ -374,24 +397,42 @@ Module Walkedby '走過去的常用函数合集
     End Function
 
     '文件大小，单位默认是 MB
-    Public Function 文件大小(path As String, Optional unit As String = "M") As Single
+    Public Function 文件大小(path As String, Optional unit As String = "M") As Double
         文件大小 = 0
         If 文件存在(path, False) = False Then Exit Function
         Dim h As Long = FileLen(path)
-        Select Case 左(UCase(unit), 1)
-            Case "B"
-                文件大小 = h
-            Case "K"
-                文件大小 = h / 1024
-            Case "G"
-                文件大小 = h / 1024 / 1024 / 1024
-            Case "T"
-                文件大小 = h / 1024 / 1024 / 1024 / 1024
-            Case "P"
-                文件大小 = h / 1024 / 1024 / 1024 / 1024 / 1024
+        文件大小 = 单位转换(h,, unit)
+    End Function
+
+    '字节单位转换
+    Public Function 单位转换(i As Double, Optional inUnit As String = "b", Optional outUnit As String = "m") As Double
+        inUnit = LCase(左(inUnit, 1))
+        outUnit = LCase(左(outUnit, 1))
+        Select Case inUnit
+            Case "k"
+                i = i * 1024
+            Case "m"
+                i = i * 1024 * 1024
+            Case "g"
+                i = i * 1024 * 1024 * 1024
+            Case "t"
+                i = i * 1024 * 1024 * 1024 * 1024
             Case Else
-                文件大小 = h / 1024 / 1024
+                i = i
         End Select
+        Select Case outUnit
+            Case "k"
+                i = i / 1024
+            Case "m"
+                i = i / 1024 / 1024
+            Case "g"
+                i = i / 1024 / 1024 / 1024
+            Case "t"
+                i = i / 1024 / 1024 / 1024 / 1024
+            Case Else
+                i = i
+        End Select
+        单位转换 = i
     End Function
 
     '运行 CMD 命令
@@ -617,7 +658,7 @@ Module Walkedby '走過去的常用函数合集
     '便捷的控制台输出，多个选项自动分开
     Public Sub 控制台(a As Object, Optional b As Object = Nothing, Optional c As Object = Nothing, Optional d As Object = Nothing, Optional e As Object = Nothing)
         Dim s As String = ""
-        Dim t As String = "     "
+        Dim t As String = "    "
         If Not IsNothing(a) Then
             s = s + a.ToString + t
         End If
@@ -633,6 +674,8 @@ Module Walkedby '走過去的常用函数合集
         If Not IsNothing(e) Then
             s = s + e.ToString + t
         End If
+        t = 去除(s, " ", vbTab)
+        If t.Length < 1 Then s = "EMPTY " & UNIX时间(Now)
         Console.WriteLine(s)
     End Sub
 
